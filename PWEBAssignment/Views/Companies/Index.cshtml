@@ -21,6 +21,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Rating)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Available)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -36,11 +39,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Rating)
             </td>
-	        <td>
-		        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-		        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-		        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-	        </td>
+	        
 	        <td>
 		        @if (item.Available)
 		        {
@@ -48,7 +47,7 @@
 			           asp-controller="Companies"
 			           asp-action="ActivateCompany"
 			           asp-route-id="@item.Id">Deactivate</a>
-                    <p class="text-success"> Activated</p>
+                    <p class="text-success">It is Activated</p>
 		        }
 		        else
 		        {
@@ -56,9 +55,13 @@
 			           asp-controller="Companies"
 			           asp-action="ActivateCompany"
 			           asp-route-id="@item.Id">Activate</a>
-			        <p class="text-danger"> Deactivated</p>
+			        <p class="text-danger">It is Deactivated</p>
 		        }
-		      
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
 	        </td>
         </tr>
 }

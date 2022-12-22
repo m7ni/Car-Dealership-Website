@@ -1,6 +1,7 @@
-﻿
+﻿@* @model IEnumerable<PWEBAssignment.Models.Car>*@
 @{
     ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div id="carouselDestaques" class="carousel slide m-0" data-bs-ride="carousel">
     <div class="carousel-indicators">
@@ -57,9 +58,30 @@
 </div>
 <div class="container bg-white">
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
-        <h1 class="display-4 fw-normal">Cars & Prices</h1>
+        <h1 class="display-4 fw-normal">Rental4You</h1>
         <p class="fs-5 text-muted">
             In this site you can rent cars from a variety of categorys and companies. Start reservating the perfect car that suits you the best
         </p>
     </div>
+    
+    @*
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+        @foreach (var car in Model)
+        {
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <h4 class="my-0 fw-normal">@car.Model</h4>
+                    </div>
+                    <div class="card-body">
+                        <h1 class="card-title pricing-card-title">@car.Category.PriceHour€/Hour<small class="text-muted fw-light"></small></h1>
+                        @car.Category
+                        <a asp-action="Details" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-outline-primary">Saber mais</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    *@
 </div>
+
