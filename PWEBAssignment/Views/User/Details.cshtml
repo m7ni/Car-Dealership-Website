@@ -1,0 +1,38 @@
+﻿@model List<PWEBAssignment.ViewModels.ManageUserRolesViewModel>
+@{
+    ViewData["Title"] = "Manage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<form method="post">
+    <div class="card">
+	    <div class="card-header">
+		    <h2>Manage User</h2>
+		    @*   @if (ViewBag.Avatar?.Length > 0)
+            {
+                <img id="MyAvatar" style="max-width: 100px; max-height: 100px"
+                 src="data:image/*;base64,@(Convert.ToBase64String(ViewBag.Avatar))" />
+            }*@
+		    <span class="badge bg-dark text-white">@ViewBag.UserName</span> Add / Remove Roles
+	    </div>
+	    <div class="card-body">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <div class="form-check m-1">
+                    <input type="hidden" asp-for="@Model[i].RoleId" />
+                    <input type="hidden" asp-for="@Model[i].RoleName" />
+                    <input asp-for="@Model[i].Selected" class="form-check-input" />
+                    <label class="form-check-label" asp-for="@Model[i].Selected">
+                        @Model[i].RoleName
+                    </label>
+                </div>
+            }
+            <div asp-validation-summary="All" class="text-danger"></div>
+        </div>
+        <div class="card-footer">
+            <input type="submit" value="Update" class="btn btn-primary"
+                   style="width:auto" />
+            <a asp-action="Index"
+               class="btn btn-primary" style="width:auto">Cancel</a>
+        </div>
+    </div>
+</form>

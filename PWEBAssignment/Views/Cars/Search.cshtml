@@ -1,0 +1,66 @@
+﻿@model PWEBAssignment.ViewModels.CarSearchViewModel
+
+
+<div class="row">
+    <div class="col-10">
+        <form method="post">
+            Filters:
+            <label for="fname">Car´s Model</label>
+            <input type="text" id="CarModel" name="modelOfCar" placeholder="Insert the model of the car">
+
+            <label for="fname">Car´s Category</label>
+            <select name="CategoryID" asp-items="ViewBag.ListOfCategorys"></select>
+            <label for="fname">Car´s Company</label>
+            <select name="CompanyID" asp-items="ViewBag.ListOfCompanys"></select>
+
+            <input type="submit" value="Pesquisar" />
+        </form>
+    </div>
+</div>
+
+@if (Model.NumResults == 0)
+{
+    <p class="alert alert-warning">
+        There are no cars with that match the filters that you used. 
+        Please try again with different ones.
+    </p>
+
+}
+else
+{
+    <p>There are @Model.NumResults cars</p>
+
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+
+        @foreach (var item in Model.ListOfCars)
+        {
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <h4 class="my-0 fw-normal">
+                            > @item.Model
+                            @if (string.IsNullOrWhiteSpace(Model.textToSearch))
+                            {
+                                @item.Company.Address
+                            }
+                            else
+                            {
+                                @Html.Raw(item.Model.Replace(Model.textToSearch, "<span class=\"bg-warning\">"+Model.textToSearch+"</span>"))
+                            }
+                        </h4>
+                    </div>
+                    <div class="card-body">
+
+                        <h1 class="card-title pricing-card-title">
+                            @item.Model<small class="text-muted fw-light"></small>
+                            @item.Category.PriceHour €/Hour
+                            @item.Company
+                        </h1>
+                      @*  <a asp-controller="Car" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                        <a asp-controller="Car" asp-action="Rent" asp-route-id="@item.Id">Rent Car</a>*@
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

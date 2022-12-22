@@ -33,13 +33,15 @@ using (var scope = app.Services.CreateScope())
     {
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-        await Initialize.CriaDadosIniciais(userManager, roleManager);
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        await Initialize.CriaDadosIniciais(userManager, roleManager, context);
     }
     catch (Exception)
     {
         throw;
     }
 }
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

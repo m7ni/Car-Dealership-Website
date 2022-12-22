@@ -100,10 +100,12 @@ namespace PWEBAssignment.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            public String firstName { get; set; }
+            [Display(Name = "First Name")]
+            public string firstName { get; set; }
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            public String lastName { get; set; }
+            [Display(Name = "Last Name")]
+            public string lastName { get; set; }
         }
 
 
@@ -123,11 +125,17 @@ namespace PWEBAssignment.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.email, CancellationToken.None);
+
+                user.firstName = Input.firstName;
+                user.lastName = Input.lastName;
+                user.available = false;
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    await _userManager.AddToRoleAsync(user, "Client");
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

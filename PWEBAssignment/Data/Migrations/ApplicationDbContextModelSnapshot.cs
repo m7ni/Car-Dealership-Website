@@ -17,10 +17,10 @@ namespace PWEBAssignment.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.12")
+                .HasAnnotation("ProductVersion", "7.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -55,7 +55,7 @@ namespace PWEBAssignment.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -80,7 +80,7 @@ namespace PWEBAssignment.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -167,6 +167,9 @@ namespace PWEBAssignment.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CompanyID")
+                        .HasColumnType("int");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -211,6 +214,9 @@ namespace PWEBAssignment.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<bool>("available")
+                        .HasColumnType("bit");
+
                     b.Property<string>("firstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -221,6 +227,8 @@ namespace PWEBAssignment.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyID");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -230,6 +238,200 @@ namespace PWEBAssignment.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.Car", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Available")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("CategoryID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CompanyID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Damage")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LicencePlate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryID");
+
+                    b.HasIndex("CompanyID");
+
+                    b.ToTable("Car");
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("PriceHour")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Category");
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.Company", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Available")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Company");
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.Deliveries", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmployeUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmployeUserId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("NumberOfKm")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Observations")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReservationId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("VehicleDamage")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeUserId1");
+
+                    b.ToTable("Deliveries");
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.Reservations", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CarId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ClientUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClientUserId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DeliveryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeliveryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReturnDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ReturnId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarId");
+
+                    b.HasIndex("ClientUserId1");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("Reservations");
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.Returns", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmployeUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmployeUserId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("NumberOfKm")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Observations")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("PhotoEvidence")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<int>("ReservationId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("VehicleDamage")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeUserId1");
+
+                    b.ToTable("Returns");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -280,6 +482,106 @@ namespace PWEBAssignment.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("PWEBAssignment.Models.Company", "Company")
+                        .WithMany("Workers")
+                        .HasForeignKey("CompanyID");
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.Car", b =>
+                {
+                    b.HasOne("PWEBAssignment.Models.Category", "Category")
+                        .WithMany("Car")
+                        .HasForeignKey("CategoryID");
+
+                    b.HasOne("PWEBAssignment.Models.Company", "Company")
+                        .WithMany("Cars")
+                        .HasForeignKey("CompanyID");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.Deliveries", b =>
+                {
+                    b.HasOne("PWEBAssignment.Models.ApplicationUser", "EmployeUser")
+                        .WithMany()
+                        .HasForeignKey("EmployeUserId1");
+
+                    b.HasOne("PWEBAssignment.Models.Reservations", "Reservation")
+                        .WithOne("Delivery")
+                        .HasForeignKey("PWEBAssignment.Models.Deliveries", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EmployeUser");
+
+                    b.Navigation("Reservation");
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.Reservations", b =>
+                {
+                    b.HasOne("PWEBAssignment.Models.Car", "Car")
+                        .WithMany()
+                        .HasForeignKey("CarId");
+
+                    b.HasOne("PWEBAssignment.Models.ApplicationUser", "ClientUser")
+                        .WithMany()
+                        .HasForeignKey("ClientUserId1");
+
+                    b.HasOne("PWEBAssignment.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId");
+
+                    b.Navigation("Car");
+
+                    b.Navigation("ClientUser");
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.Returns", b =>
+                {
+                    b.HasOne("PWEBAssignment.Models.ApplicationUser", "EmployeUser")
+                        .WithMany()
+                        .HasForeignKey("EmployeUserId1");
+
+                    b.HasOne("PWEBAssignment.Models.Reservations", "Reservation")
+                        .WithOne("Return")
+                        .HasForeignKey("PWEBAssignment.Models.Returns", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EmployeUser");
+
+                    b.Navigation("Reservation");
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.Category", b =>
+                {
+                    b.Navigation("Car");
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.Company", b =>
+                {
+                    b.Navigation("Cars");
+
+                    b.Navigation("Workers");
+                });
+
+            modelBuilder.Entity("PWEBAssignment.Models.Reservations", b =>
+                {
+                    b.Navigation("Delivery")
+                        .IsRequired();
+
+                    b.Navigation("Return")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

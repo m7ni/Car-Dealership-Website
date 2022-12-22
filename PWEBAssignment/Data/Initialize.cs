@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PWEBAssignment.Models;
 
 namespace PWEBAssignment.Data
@@ -13,7 +15,7 @@ namespace PWEBAssignment.Data
 	public static class Initialize
 	{
 		public static async Task CriaDadosIniciais(UserManager<ApplicationUser>
-			userManager, RoleManager<IdentityRole> roleManager)
+			userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
 		{
 			//Adicionar default Roles
 			await roleManager.CreateAsync(new IdentityRole(Roles.Admin.ToString()));
@@ -37,6 +39,39 @@ namespace PWEBAssignment.Data
 				await userManager.AddToRoleAsync(defaultUser,
 					Roles.Admin.ToString());
 			}
-		}
+
+
+            if (context.Category.IsNullOrEmpty())
+            {
+                var categoria = new Category();
+                categoria.Name = "SUV";
+                categoria.PriceHour = 25;
+                context.Category.Add(categoria);
+                context.SaveChanges();
+
+                categoria = new Category();
+                categoria.Name = "SPORT";
+                categoria.PriceHour = 35;
+                context.Category.Add(categoria);
+                await context.SaveChangesAsync();
+
+                categoria = new Category();
+                categoria.Name = "MICRO";
+                categoria.PriceHour = 35;
+                context.Category.Add(categoria);
+                await context.SaveChangesAsync();
+
+
+                categoria = new Category();
+                categoria.Name = "LUXURY";
+                categoria.PriceHour = 35;
+                context.Category.Add(categoria);
+                await context.SaveChangesAsync();
+
+            }
+
+
+           
+        }
 	}
 }

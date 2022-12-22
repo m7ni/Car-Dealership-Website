@@ -1,0 +1,89 @@
+﻿@model IEnumerable<PWEBAssignment.Models.Car>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Cars</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create New</a>
+</p>
+
+<div class="row">
+    <div class="col-10">
+        <form method="post">
+                Filters:
+           
+            <label for="fname">Car´s Category</label>
+            <select name="CategoryID" asp-items="ViewBag.ListOfCategorys"></select>
+            <label for="fname">Car´s Company</label>
+            <select name="CompanyID" asp-items="ViewBag.ListOfCompanys"></select>
+            <label for="fname">Car´s Model</label>
+            <input type="text" id="LocationOfCompany" name="LocationOfCompany" placeholder="Insert the location of the company">
+
+            <input type="submit" value="Search"/>
+        </form>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Model)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LicencePlate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Damage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Available)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category.PriceHour)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Company)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Model)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LicencePlate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Damage)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Available)
+            </td>
+            <td>
+	            @Html.DisplayNameFor(model => model.Category.PriceHour)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Company.Id)
+            </td>
+	        <td>
+		        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+		        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+		        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+	        </td>
+        </tr>
+}
+    </tbody>
+</table>
