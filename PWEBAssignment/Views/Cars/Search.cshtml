@@ -5,15 +5,14 @@
     <div class="col-10">
         <form method="post">
             Filters:
-            <label for="fname">Car´s Model</label>
-            <input type="text" id="CarModel" name="modelOfCar" placeholder="Insert the model of the car">
-
             <label for="fname">Car´s Category</label>
             <select name="CategoryID" asp-items="ViewBag.ListOfCategorys"></select>
             <label for="fname">Car´s Company</label>
             <select name="CompanyID" asp-items="ViewBag.ListOfCompanys"></select>
+            <label for="fname">Car's Location'</label>
+            <select name="Adress" asp-items="ViewBag.ListOfAddresses"></select>
 
-            <input type="submit" value="Pesquisar" />
+            <input type="submit" value="Search" />
         </form>
     </div>
 </div>
@@ -37,17 +36,7 @@ else
             <div class="col">
                 <div class="card mb-4 rounded-3 shadow-sm">
                     <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">
-                            > @item.Model
-                            @if (string.IsNullOrWhiteSpace(Model.textToSearch))
-                            {
-                                @item.Company.Address
-                            }
-                            else
-                            {
-                                @Html.Raw(item.Model.Replace(Model.textToSearch, "<span class=\"bg-warning\">"+Model.textToSearch+"</span>"))
-                            }
-                        </h4>
+
                     </div>
                     <div class="card-body">
 
@@ -56,8 +45,8 @@ else
                             @item.Category.PriceHour €/Hour
                             @item.Company
                         </h1>
-                      @*  <a asp-controller="Car" asp-action="Details" asp-route-id="@item.Id">Details</a>
-                        <a asp-controller="Car" asp-action="Rent" asp-route-id="@item.Id">Rent Car</a>*@
+                        <a asp-controller="Car" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                        <a asp-controller="Car" asp-action="Rent" asp-route-id="@item.Id">Rent Car</a>
                     </div>
                 </div>
             </div>

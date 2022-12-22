@@ -19,9 +19,13 @@
             <select name="CategoryID" asp-items="ViewBag.ListOfCategorys"></select>
             <label for="fname">Car´s Company</label>
             <select name="CompanyID" asp-items="ViewBag.ListOfCompanys"></select>
-            <label for="fname">Car´s Model</label>
+            <label for="fname">Car´s Location</label>
             <input type="text" id="LocationOfCompany" name="LocationOfCompany" placeholder="Insert the location of the company">
 
+            @*
+            <label for="fname">Car´s Location</label>
+            <select name="Adress" asp-items="ViewBag.ListOfAddresses"></select>
+            *@
             <input type="submit" value="Search"/>
         </form>
     </div>

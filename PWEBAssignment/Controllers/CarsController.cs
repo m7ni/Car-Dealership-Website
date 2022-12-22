@@ -191,22 +191,22 @@ namespace PWEBAssignment.Controllers
             //return RedirectToAction(nameof(Carrinho));
             return RedirectToAction(nameof(Car));
         }
-        /*
+        
         //GET
         public async Task<IActionResult> Search( string? textToSearch)
         {
-            ViewData["Title"] = "Car´s models´ list with location '" + LocationOfCompany + "'";
+            ViewData["Title"] = "Car´s models´ list with location '" + textToSearch + "'";
 
             var searchVM = new CarSearchViewModel();
             searchVM.textToSearch = textToSearch;
 
             if (string.IsNullOrEmpty(textToSearch))
             {
-                searchVM.ListOfCars = await _context.Company.Include("Address").ToListAsync();
+                searchVM.ListOfCars = await _context.Car.Include("Address").ToListAsync();
             } else
             {
-                searchVM.ListOfCars = await _context.Company.Include("Address").
-                    Where(c => c.Address.Contains(searchVM.textToSearch)).ToListAsync();
+                searchVM.ListOfCars = await _context.Car.Include("Address").
+                    Where(c => c.Company.Address.Contains(searchVM.textToSearch)).ToListAsync();
             }
 
 
@@ -214,27 +214,26 @@ namespace PWEBAssignment.Controllers
 
 
             return View(searchVM);
-        }*/
-        /*
+        }
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Search([Bind("textoAPesquisar")] CarSearchViewModel pesquisaCurso)
+        public async Task<IActionResult> Search([Bind("textToSearch")] CarSearchViewModel carSearch)
         {
-            ViewData["Title"] = "Lista de Cursos com '" + pesquisaCurso.textoAPesquisar + "'";
+            ViewData["Title"] = "Lista de Cursos com '" + carSearch.textToSearch + "'";
 
-            if (string.IsNullOrWhiteSpace(pesquisaCurso.textoAPesquisar))
+            if (string.IsNullOrWhiteSpace(carSearch.textToSearch))
             {
-                pesquisaCurso.ListaDeCursos = await _context.Car.Include("Categoria").ToListAsync();
+                carSearch.ListOfCars = await _context.Car.Include("Address").ToListAsync();
             }
             else
             {
-                pesquisaCurso.ListaDeCursos = await _context.Car.Include("Categoria").
-                Where(c => c.Nome.Contains(pesquisaCurso.textoAPesquisar) ||
-                            c.Descricao.Contains(pesquisaCurso.textoAPesquisar)).ToListAsync();
-                pesquisaCurso.NumResultados = pesquisaCurso.ListaDeCursos.Count;
+                carSearch.ListOfCars = await _context.Car.Include("Address").
+                Where(c => c.Company.Address.Contains(carSearch.textToSearch)).ToListAsync();
+                carSearch.NumResults = carSearch.ListOfCars.Count;
             }
 
-            return View(pesquisaCurso);
-        }*/
+            return View(carSearch);
+        }
     }
 }
