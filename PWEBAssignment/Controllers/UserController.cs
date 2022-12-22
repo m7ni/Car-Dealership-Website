@@ -31,8 +31,8 @@ namespace PWEBAssignment.Controllers
                 userRolesViewModel.Add(new UserRolesViewModel
                 {
                     UserId = user.Id,
-                    PrimeiroNome = user.firstName,
-                    UltimoNome = user.lastName,
+                    FirstName = user.firstName,
+                    LastName = user.lastName,
                     UserName = user.UserName,
                     available = user.available,
                     Roles = await _userManager.GetRolesAsync(user),

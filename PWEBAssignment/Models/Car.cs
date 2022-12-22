@@ -19,9 +19,11 @@ namespace PWEBAssignment.Models
         [Display(Name = "Available", Description = "Car's Availability (Y/N)", Prompt = "Insert the availability of the car")]
         public bool Available { get; set; }
 
+        [Display(Name = "Company", Description = "Car's Availability (Y/N)", Prompt = "Insert the availability of the car")]
         public int? CompanyID { get; set; }
         public Company Company { get; set; }
 
+        [Display(Name = "Category", Description = "Car's Availability (Y/N)", Prompt = "Insert the availability of the car")]
         public int? CategoryID { get; set; }
         public Category Category { get; set; }
     }

@@ -29,8 +29,8 @@
                      src="data:image/*;base64,@(Convert.ToBase64String(userRoles.Avatar))" />
                 }*@
             </td>
-            <td>@userRoles.PrimeiroNome</td>
-            <td>@userRoles.UltimoNome</td>
+            <td>@userRoles.FirstName</td>
+            <td>@userRoles.LastName</td>
             <td>@userRoles.UserName</td>
             <td>@string.Join(", ", userRoles.Roles.ToList())</td>
 	        <td>

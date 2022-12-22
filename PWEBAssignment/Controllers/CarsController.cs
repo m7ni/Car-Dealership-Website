@@ -24,7 +24,7 @@ namespace PWEBAssignment.Controllers
         // GET: Cars
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Car.Include(c => c.Company);
+            var applicationDbContext =  _context.Car.Include(c => c.Company).Include(d=>d.Category);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -37,7 +37,8 @@ namespace PWEBAssignment.Controllers
             }
 
             var car = await _context.Car
-                .Include(c => c.Company)
+                .Include(c => c.Company).Include(
+                    d=>d.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (car == null)
             {
@@ -60,16 +61,17 @@ namespace PWEBAssignment.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Model,LicencePlate,Damage,Category,Available,Price,CompanyID")] Car car)
+        public async Task<IActionResult> Create([Bind("Id,Model,LicencePlate,Damage,Available,CategoryID,CompanyID")] Car car)
         {
+            ModelState.Remove(nameof(car.Category));
+            ModelState.Remove(nameof(car.Company));
             if (ModelState.IsValid)
             {
                 _context.Add(car);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CompanyID"] = new SelectList(_context.Company, "Id", "Id", car.CompanyID);
-            return View(car);
+            return RedirectToAction(nameof(Create));
         }
 
         // GET: Cars/Edit/5
@@ -85,7 +87,8 @@ namespace PWEBAssignment.Controllers
             {
                 return NotFound();
             }
-            ViewData["CompanyID"] = new SelectList(_context.Company, "Id", "Id", car.CompanyID);
+            ViewData["Category"] = new SelectList(_context.Category, "Id", "Name");
+            ViewData["CompanyID"] = new SelectList(_context.Company, "Id", "Name", car.CompanyID);
             return View(car);
         }
 
@@ -95,17 +98,22 @@ namespace PWEBAssignment.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         //[Authorize(Roles = "Employe")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Model,LicencePlate,Damage,Category,Available,Price,CompanyID")] Car car)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Model,LicencePlate,Damage,Available,CategoryID,CompanyID")] Car car)
         {
             if (id != car.Id)
             {
                 return NotFound();
             }
 
+            ModelState.Remove(nameof(car.Category));
+            ModelState.Remove(nameof(car.Company));
             if (ModelState.IsValid)
             {
                 try
                 {
+                    car.Company = await _context.Company.FindAsync(car.CompanyID);
+                    car.Category = await _context.Category.FindAsync(car.CategoryID);
+
                     _context.Update(car);
                     await _context.SaveChangesAsync();
                 }
@@ -189,7 +197,7 @@ namespace PWEBAssignment.Controllers
             //HttpContext.Session.SetJson("CarrinhoDeCompras", carrinhoDeCompras);
 
             //return RedirectToAction(nameof(Carrinho));
-            return RedirectToAction(nameof(Car));
+            return RedirectToAction(nameof(Index));
         }
         
         //GET
@@ -202,16 +210,14 @@ namespace PWEBAssignment.Controllers
 
             if (string.IsNullOrEmpty(textToSearch))
             {
-                searchVM.ListOfCars = await _context.Car.Include("Address").ToListAsync();
+                searchVM.ListOfCars = await _context.Car.ToListAsync();
             } else
             {
                 searchVM.ListOfCars = await _context.Car.Include("Address").
                     Where(c => c.Company.Address.Contains(searchVM.textToSearch)).ToListAsync();
             }
 
-
             searchVM.NumResults = searchVM.ListOfCars.Count;
-
 
             return View(searchVM);
         }
@@ -235,5 +241,38 @@ namespace PWEBAssignment.Controllers
 
             return View(carSearch);
         }
+
+        /*
+        public async Task<IActionResult> Sort(string sortOrder)
+        {
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewData["CurrentFilter"] = searchString;
+
+            var students = from s in _context.Students
+                           select s;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                students = students.Where(s => s.LastName.Contains(searchString)
+                                       || s.FirstMidName.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    students = students.OrderByDescending(s => s.LastName);
+                    break;
+                case "Date":
+                    students = students.OrderBy(s => s.EnrollmentDate);
+                    break;
+                case "date_desc":
+                    students = students.OrderByDescending(s => s.EnrollmentDate);
+                    break;
+                default:
+                    students = students.OrderBy(s => s.LastName);
+                    break;
+            }
+            return View(await students.AsNoTracking().ToListAsync());
+        }*/
+
     }
 }
