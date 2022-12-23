@@ -264,7 +264,7 @@ namespace PWEBAssignment.Controllers
                 searchVM.ListOfCars = await _context.Car.ToListAsync();
             } else
             {
-                searchVM.ListOfCars = await _context.Car.Include("Address").
+                searchVM.ListOfCars = await _context.Car.Include("Category").
                     Where(c => c.Company.Address.Contains(searchVM.textToSearch)).ToListAsync();
             }
 
@@ -281,15 +281,15 @@ namespace PWEBAssignment.Controllers
 
             if (string.IsNullOrWhiteSpace(carSearch.textToSearch))
             {
-                carSearch.ListOfCars = await _context.Car.Include("Address").ToListAsync();
+                carSearch.ListOfCars = await _context.Car.Include("Category").ToListAsync();
             }
             else
             {
-                carSearch.ListOfCars = await _context.Car.Include("Address").
-                Where(c => c.Company.Address.Contains(carSearch.textToSearch)).ToListAsync();
-                carSearch.NumResults = carSearch.ListOfCars.Count;
+                carSearch.ListOfCars = await _context.Car.Include("Category")
+                    .Where(c => c.Company.Address.Contains(carSearch.textToSearch)).ToListAsync();
             }
 
+            carSearch.NumResults = carSearch.ListOfCars.Count;
             return View(carSearch);
         }
 

@@ -9,6 +9,7 @@ namespace PWEBAssignment.ViewModels
     {
         public List<Car> ListOfCars { get; set; }
         public int NumResults { get; set; }
+
         public string textToSearch { get; set; }
     }
 }
