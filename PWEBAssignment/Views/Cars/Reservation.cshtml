@@ -1,0 +1,56 @@
+﻿@model PWEBAssignment.Models.Reservations
+
+
+@{
+    ViewData["Title"] = "Carrinho";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+<h1>Carrinho de compras</h1>
+@*
+Items no carrinho: <span class="badge bg-secondary">@Model.TotalItems()</span>
+<table class="table table-hover table-striped">
+    <thead>
+        <tr>
+            <th>Car</th>
+            <th>Price per Hour</th>
+            <th>Hours</th>
+            <th>Sub-total</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.TotalItems() == 0)
+        {
+            <tr>
+                <td colspan="4" class="text-danger">Não existem produtos no carrinho</td>
+            </tr>
+        }
+        @foreach (var item in Model.items)
+        {
+            <tr>
+                <th>@item.CursoNome</th>
+                <th>@item.PrecoUnit</th>
+                <th>@item.Quantidade</th>
+                <th>@item.SubTotal()</th>
+                <th>
+                    <a asp-action="AlterarQuantidadeCarrinhoItem" asp-route-cursoId="@item.CursoId" asp-route-quantidade="-1">-</a> |
+                    <a asp-action="AlterarQuantidadeCarrinhoItem" asp-route-cursoId="@item.CursoId" asp-route-quantidade="1">+</a> |
+                    <a asp-action="RemoverCarrinhoItem" asp-route-cursoId="@item.CursoId" onclick="return confirm('Tem a certeza que deseja remover?')">Remover</a>
+                </th>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3">Total:</td>
+            <td>@Model.Total()</td>
+        </tr>
+    </tfoot>
+</table>
+<div class="row">
+    <div class="col-12 text-end ">
+        <a href="#" class="btn btn-primary">Continuar a Comprar</a>
+        <a href="#" class="btn btn-success">Checkout</a>
+    </div>
+</div>*@

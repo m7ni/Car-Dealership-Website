@@ -274,5 +274,22 @@ namespace PWEBAssignment.Controllers
             return View(await students.AsNoTracking().ToListAsync());
         }*/
 
+        public async Task<IActionResult> Reservation(int? id)
+        {
+            if (id == null || _context.Car == null)
+            {
+                return NotFound();
+            }
+
+            var car = await _context.Car.Include("Category")
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (car == null)
+            {
+                return NotFound();
+            }
+
+            return RedirectToAction(nameof(Reservation));
+        }
+
     }
 }

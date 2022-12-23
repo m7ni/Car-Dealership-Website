@@ -15,8 +15,6 @@ namespace PWEBAssignment.Models
         public int? CarId { get; set; }
         public Car Car { get; set; }
 
-
-
         [Display(Name = "Delivery Date", Description = "Delivery Date of the the reservation", Prompt = "Insert the Delivery Date of the the reservation")]
         public DateTime DeliveryDate { get; set; }
 
@@ -29,5 +27,9 @@ namespace PWEBAssignment.Models
 
         public int? DeliveryId { get; set; }
         public Deliveries Delivery { get; set; }
+
+
+
+
     }
 }
