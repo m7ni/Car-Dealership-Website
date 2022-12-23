@@ -13,6 +13,7 @@ using PWEBAssignment.ViewModels;
 
 namespace PWEBAssignment.Controllers
 {
+    
     public class CarsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,25 +24,84 @@ namespace PWEBAssignment.Controllers
             _userManager = userManager;
         }
 
-        // GET: Cars
-        public async Task<IActionResult> Index()
+        public enum Sorts
         {
+            All,
+            PriceLow2High,
+            PriceHigh2Low,
+            RatingLow2High,
+            RatingHigh2Low
+        }
+
+        // GET: Cars
+        public async Task<IActionResult> Index(string? sortString) /*Sorts? sort*/
+        {
+            
+
+            if(sortString == null)
+            {
+                ViewData["Title"] = "All cars";
+            }
+                    //se receber sem estar a null pode se mudar para o que está em comentário
+            var sort = Sorts.All;
+            switch (sortString)
+            {
+                case "1":
+                    sort = Sorts.PriceLow2High; break;
+                case "2":
+                    sort = Sorts.PriceHigh2Low; break;
+                case "3":
+                    sort = Sorts.RatingLow2High; break;
+                case "4":
+                    sort = Sorts.RatingHigh2Low; break;
+            }
+
             ViewData["ListOfCompanys"] = new SelectList(_context.Company, "Id", "Name");
             ViewData["ListOfCategorys"] = new SelectList(_context.Category, "Id", "Name");
             ViewData["ListOfAddresses"] = new SelectList(_context.Company, "Id", "Address");
-
+            var listCar = new List<Car>();
             if (User.IsInRole("Employee") || User.IsInRole("Manager"))
             {
-
                 var user =await _userManager.GetUserAsync(User);
-
-                var carsUser = _context.Car.Include(c => c.Company).Include(d => d.Category).Where(c =>c.CompanyID == user.CompanyID);
-                return View(await carsUser.ToListAsync());
+                var carsUser = _context.Car.Include(c => c.Company).Include(d => d.Category).Where(c => c.CompanyID == user.CompanyID);
+                listCar = await carsUser.ToListAsync();
+                
+                if (sort == Sorts.PriceLow2High)
+                {
+                    var sortedCars = listCar.OrderBy(c => c.Category.PriceHour);
+                    return View(sortedCars);
+                }
+                if (sort == Sorts.PriceHigh2Low)
+                {
+                    var sortedCars = listCar.OrderByDescending(c => c.Category.PriceHour);
+                    return View(sortedCars);
+                }
+                return View(listCar);
             }
 
-
-                var cars = _context.Car.Include(c => c.Company).Include(d => d.Category).Where(c => c.Available == true);
-                return View(await cars.ToListAsync());
+            var cars = _context.Car.Include(c => c.Company).Include(d => d.Category).Where(c => c.Available == true);
+            listCar = await cars.ToListAsync();
+            if (sort == Sorts.PriceLow2High)
+            {
+                var sortedCars = listCar.OrderBy(c => c.Category.PriceHour);
+                return View(sortedCars);
+            }
+            if (sort == Sorts.PriceHigh2Low)
+            {
+                var sortedCars = listCar.OrderByDescending(c => c.Category.PriceHour);
+                return View(sortedCars);
+            }
+            if (sort == Sorts.RatingLow2High)
+            {
+                var sortedCars = listCar.OrderBy(c => c.Company.Rating);
+                return View(sortedCars);
+            }
+            if (sort == Sorts.RatingHigh2Low)
+            {
+                var sortedCars = listCar.OrderByDescending(c => c.Company.Rating);
+                return View(sortedCars);
+            }
+            return View(listCar);
         }
 
         // GET: Cars/Details/5
@@ -246,38 +306,8 @@ namespace PWEBAssignment.Controllers
             return View(carSearch);
         }
 
+        
         /*
-        public async Task<IActionResult> Sort(string sortOrder)
-        {
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-            ViewData["CurrentFilter"] = searchString;
-
-            var students = from s in _context.Students
-                           select s;
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                students = students.Where(s => s.LastName.Contains(searchString)
-                                       || s.FirstMidName.Contains(searchString));
-            }
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    students = students.OrderByDescending(s => s.LastName);
-                    break;
-                case "Date":
-                    students = students.OrderBy(s => s.EnrollmentDate);
-                    break;
-                case "date_desc":
-                    students = students.OrderByDescending(s => s.EnrollmentDate);
-                    break;
-                default:
-                    students = students.OrderBy(s => s.LastName);
-                    break;
-            }
-            return View(await students.AsNoTracking().ToListAsync());
-        }*/
-
         public async Task<IActionResult> Reservation(int? id)
         {
             if (id == null || _context.Car == null)
@@ -286,15 +316,15 @@ namespace PWEBAssignment.Controllers
             }
 
             //var car = RedirectToAction(nameof(CarExists(id)));
-            /*if (car == false)
-            {
-                return NotFound();
-            }*/
+            //if (car == false)
+            //{
+            //    return NotFound();
+            //}
 
             //return View(Reservations);
             return RedirectToAction("Index");
-        }
-
+        }*/
+    
         public async Task<IActionResult> ActivateCar(int id)
         {
             var car = await _context.Car.Where(c => c.Id == id).FirstOrDefaultAsync();
