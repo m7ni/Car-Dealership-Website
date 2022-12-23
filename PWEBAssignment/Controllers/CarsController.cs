@@ -177,28 +177,6 @@ namespace PWEBAssignment.Controllers
         {
           return (_context.Car?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-
-        public async Task<IActionResult> Buy(int? id)
-        {
-            if (id == null || _context.Car == null)
-            {
-                return NotFound();
-            }
-
-            var curso = await _context.Car.Include("Category")
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (curso == null)
-            {
-                return NotFound();
-            }
-
-            //var carrinhoDeCompras = Carrinho();
-            //carrinhoDeCompras.AddItem(curso);
-            //HttpContext.Session.SetJson("CarrinhoDeCompras", carrinhoDeCompras);
-
-            //return RedirectToAction(nameof(Carrinho));
-            return RedirectToAction(nameof(Index));
-        }
         
         //GET
         public async Task<IActionResult> Search( string? textToSearch)
@@ -281,14 +259,14 @@ namespace PWEBAssignment.Controllers
                 return NotFound();
             }
 
-            var car = await _context.Car.Include("Category")
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (car == null)
+            //var car = RedirectToAction(nameof(CarExists(id)));
+            /*if (car == false)
             {
                 return NotFound();
-            }
+            }*/
 
-            return RedirectToAction(nameof(Reservation));
+            //return View(Reservations);
+            return RedirectToAction("Index");
         }
 
     }

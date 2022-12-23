@@ -15,13 +15,11 @@ namespace PWEBAssignment.Models
         public int? CarId { get; set; }
         public Car Car { get; set; }
 
-        [Display(Name = "Delivery Date", Description = "Delivery Date of the the reservation", Prompt = "Insert the Delivery Date of the the reservation")]
+        [Display(Name = "Delivery Date", Description = "Delivery Date of the reservation", Prompt = "Insert the Delivery Date of the reservation")]
         public DateTime DeliveryDate { get; set; }
 
-        [Display(Name = "Return Date", Description = "Return Date of the the reservation", Prompt = "Insert the Return Date of the the reservation")]
+        [Display(Name = "Return Date", Description = "Return Date of the reservation", Prompt = "Insert the Return Date of the reservation")]
         public DateTime ReturnDate { get; set; }
-
-
         public int? ReturnId { get; set; }
         public Returns Return { get; set; }
 
