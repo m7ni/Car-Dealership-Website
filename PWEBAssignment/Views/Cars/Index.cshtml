@@ -31,19 +31,12 @@
     </div>
     <div class="col-10">
         <h4>Sort By:</h4>
-        <a asp-action="Index" asp-route-sorts="0">All</a> |
-        <a asp-action="Index" asp-route-sorts="1">Price: Low to High</a> |
-        <a asp-action="Index" asp-route-sorts="2">Price: High to Low</a> |
-        <a asp-action="Index" asp-route-sorts="3">Rating: Low to High</a> |
-        <a asp-action="Index" asp-route-sorts="4">Rating: High to Low</a>
 
-        @*
-        <a asp-action="Index" asp-route-sorts="0">All</a> |
-        <a asp-action="Index" asp-route-sorts="PriceLow2High">Price: Low to High</a> |
-        <a asp-action="Index" asp-route-sorts="PriceHigh2Low">Price: High to Low</a> |
-        <a asp-action="Index" asp-route-sorts="RatingLow2High">Rating: Low to High</a> |
-        <a asp-action="Index" asp-route-sorts="RatingHigh2Low">Rating: High to Low</a>
-        *@
+        <a asp-action="Index" asp-route-sort="">All</a> |
+        <a asp-action="Index" asp-route-sort="PriceLow2High">Price: Low to High</a> |
+        <a asp-action="Index" asp-route-sort="PriceHigh2Low">Price: High to Low</a> |
+        <a asp-action="Index" asp-route-sort="RatingLow2High">Rating: Low to High</a> |
+        <a asp-action="Index" asp-route-sort="RatingHigh2Low">Rating: High to Low</a>
     </div>
 </div>
 

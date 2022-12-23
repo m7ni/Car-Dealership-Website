@@ -34,27 +34,14 @@ namespace PWEBAssignment.Controllers
         }
 
         // GET: Cars
-        public async Task<IActionResult> Index(string? sortString) /*Sorts? sort*/
+        public async Task<IActionResult> Index(Sorts? sort) /*Sorts? sort*/
         {
             
 
-            if(sortString == null)
+            if(sort == null)
             {
                 ViewData["Title"] = "All cars";
-            }
-                    //se receber sem estar a null pode se mudar para o que está em comentário
-            var sort = Sorts.All;
-            switch (sortString)
-            {
-                case "1":
-                    sort = Sorts.PriceLow2High; break;
-                case "2":
-                    sort = Sorts.PriceHigh2Low; break;
-                case "3":
-                    sort = Sorts.RatingLow2High; break;
-                case "4":
-                    sort = Sorts.RatingHigh2Low; break;
-            }
+            }            
 
             ViewData["ListOfCompanys"] = new SelectList(_context.Company, "Id", "Name");
             ViewData["ListOfCategorys"] = new SelectList(_context.Category, "Id", "Name");
