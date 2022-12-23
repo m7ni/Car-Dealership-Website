@@ -6,27 +6,25 @@
 
 <h1>Cars</h1>
 
-<p>
-    <a class="btn btn-primary" asp-action="Create">Create New</a>
-</p>
+@if (User.IsInRole("Employee") || User.IsInRole("Manager"))
+{
+    <p>
+        <a class="btn btn-primary" asp-action="Create">Create New</a>
+    </p>
+}
 
 <div class="row">
     <div class="col-10">
         <h4>Filters:</h4>
         <form method="post">
-                
-           
             <label for="fname">Car´s Category</label>
             <select name="CategoryID" asp-items="ViewBag.ListOfCategorys"></select>
             <label for="fname">Car´s Company</label>
             <select name="CompanyID" asp-items="ViewBag.ListOfCompanys"></select>
-            <label for="fname">Car´s Location</label>
-            <input type="text" id="LocationOfCompany" name="LocationOfCompany" placeholder="Insert the location of the company">
-
-            @*
+                
             <label for="fname">Car´s Location</label>
             <select name="Adress" asp-items="ViewBag.ListOfAddresses"></select>
-            *@
+                
             <input type="submit" value="Search"/>
 
         </form>
@@ -34,13 +32,14 @@
     <div class="col-10">
         <h4>Sort By:</h4>
         <form method="post">
-                
+
 
             <input type="submit" value="Sort"/>
 
         </form>
     </div>
 </div>
+
 <br></br>
 
 
@@ -49,14 +48,41 @@
     {
         <div class="col">
             <div class="card mb-4 rounded-3 shadow-sm">
-                <div class="card-header py-3">
-                    <h4 class="my-0 fw-normal">@car.Model</h4>
-                </div>
+                
                 <div class="card-body">
-                    <h1 class="card-title pricing-card-title">@car.Category.PriceHour€/Hour<small class="text-muted fw-light"></small></h1>
-                    <p>@car.Category.Name</p>
-                    <a asp-action="Details" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-outline-primary">Details</a>
-                    <a asp-action="Reservation" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-success">Rent</a>
+
+                    <div class="card-header py-3">
+                        <h4 class="my-0 fw-normal">@car.Model</h4>
+                    </div>
+                        <h1 class="card-title pricing-card-title">@car.Category.PriceHour€/Hour<small class="text-muted fw-light"></small></h1>
+                        <p>@car.Category.Name</p>
+                        <p>@car.Company.Name</p>
+                        <a asp-action="Details" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-outline-primary">Details</a>
+                        <br>
+                    @if (User.IsInRole("Manager") || User.IsInRole("Employee") || User.IsInRole("Admin"))
+                    {
+                        @if (@car.Available)
+                        {
+                            <a class="btn btn-primary"
+                                asp-controller="Cars"
+                                asp-action="ActivateCar"
+                               asp-route-id="@car.Id">Make Unavailable</a>
+								
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary"
+                               asp-controller="Cars"
+                                asp-action="ActivateCar"
+                                asp-route-id="@car.Id"> Make Available</a>
+                            
+                        }
+                        <a asp-action="Delete" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-danger">Delete</a>
+                        <br>
+                        <a asp-action="Edit" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-success">Edit</a>
+                        
+                    }
+                   
                 </div>
             </div>
         </div>

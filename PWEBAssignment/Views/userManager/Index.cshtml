@@ -42,26 +42,26 @@
 			<td>@string.Join(", ", userRoles.Roles.ToList())</td>
 			<td>
 				<a class="btn btn-primary"
-				   asp-controller="User"
-				   asp-action="Details"
-				   asp-route-userId="@userRoles.UserId">Edit</a>
+					asp-controller="UserManager"
+				   asp-action="Delete"
+				   asp-route-userId="@userRoles.UserId">Delete</a>
 			</td>
 			<td>
 				@if (userRoles.available)
 				{
 					<a class="btn btn-primary"
-					   asp-controller="User"
+					   asp-controller="UserManager"
 					   asp-action="ActivateUser"
 					   asp-route-userId="@userRoles.UserId">Deactivate</a>
 				}
 				else
 				{
 					<a class="btn btn-primary"
-					   asp-controller="User"
+					   asp-controller="UserManager"
 					   asp-action="ActivateUser"
 					   asp-route-userId="@userRoles.UserId">Activate</a>
 				}
-		      
+
 			</td>
 		</tr>
 	}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,17 +16,32 @@ namespace PWEBAssignment.Controllers
     public class CarsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public CarsController(ApplicationDbContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public CarsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Cars
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext =  _context.Car.Include(c => c.Company).Include(d=>d.Category);
-            return View(await applicationDbContext.ToListAsync());
+            ViewData["ListOfCompanys"] = new SelectList(_context.Company, "Id", "Name");
+            ViewData["ListOfCategorys"] = new SelectList(_context.Category, "Id", "Name");
+            ViewData["ListOfAddresses"] = new SelectList(_context.Company, "Id", "Address");
+
+            if (User.IsInRole("Employee") || User.IsInRole("Manager"))
+            {
+
+                var user =await _userManager.GetUserAsync(User);
+
+                var carsUser = _context.Car.Include(c => c.Company).Include(d => d.Category).Where(c =>c.CompanyID == user.CompanyID);
+                return View(await carsUser.ToListAsync());
+            }
+
+
+                var cars = _context.Car.Include(c => c.Company).Include(d => d.Category).Where(c => c.Available == true);
+                return View(await cars.ToListAsync());
         }
 
         // GET: Cars/Details/5
@@ -49,9 +65,19 @@ namespace PWEBAssignment.Controllers
         }
 
         // GET: Cars/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["CompanyID"] = new SelectList(_context.Company, "Id", "Name");
+            if (User.IsInRole("Employee") || User.IsInRole("Manager"))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                ViewData["CompanyID"] = new SelectList(_context.Company.Where(c=> c.Id == user.CompanyID), "Id", "Name");
+            }
+        
+            else
+            {
+                ViewData["CompanyID"] = new SelectList(_context.Company, "Id", "Name");
+            }
+          
             ViewData["Category"] = new SelectList(_context.Category, "Id", "Name");
             return View();
         }
@@ -204,7 +230,7 @@ namespace PWEBAssignment.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Search([Bind("textToSearch")] CarSearchViewModel carSearch)
         {
-            ViewData["Title"] = "Lista de Cursos com '" + carSearch.textToSearch + "'";
+            ViewData["Title"] = "Lista de Carros com '" + carSearch.textToSearch + "'";
 
             if (string.IsNullOrWhiteSpace(carSearch.textToSearch))
             {
@@ -269,5 +295,22 @@ namespace PWEBAssignment.Controllers
             return RedirectToAction("Index");
         }
 
+        public async Task<IActionResult> ActivateCar(int id)
+        {
+            var car = await _context.Car.Where(c => c.Id == id).FirstOrDefaultAsync();
+
+            if (car == null)
+                return RedirectToAction(nameof(Index));
+
+            if (car.Available)
+                car.Available = false;
+            else
+                car.Available = true;
+
+            _context.Update(car);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

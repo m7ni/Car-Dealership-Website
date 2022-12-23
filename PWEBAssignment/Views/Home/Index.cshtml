@@ -1,4 +1,4 @@
-﻿@* @model IEnumerable<PWEBAssignment.Models.Car>*@
+﻿@model IEnumerable<PWEBAssignment.Models.Car>
 @{
     ViewData["Title"] = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -16,31 +16,21 @@
         <div class="carousel-item active banner_01">
             <div class="container">
                 <div class="carousel-caption">
-                    <h1 class=" text-warning">Conquista a tua liberdade!</h1>
-                    <p class=" text-white">Carro, Mota, Camião, tu escolhes, nós ensinamos.</p>
-                    <p><a class="btn btn-lg btn-warning " href="#">Junta-te a nós</a></p>
+                    
                 </div>
             </div>
         </div>
         <div class="carousel-item banner_06">
             <div class="container">
                 <div class="carousel-caption text-white">
-                    <h1>Formação Teórica.</h1>
-                    <p>
-                        Acesso exclusivo a conteúdos no nosso portal!<br />
-                        Todas as questões do IMTT, Testes, Estatísticas, Comunicação com o teu
-                        instrutor.
-                    </p>
-                    <p><a class="btn btn-lg btn-success" href="#">Regista-te!</a></p>
+                    
                 </div>
             </div>
         </div>
         <div class="carousel-item banner_02">
             <div class="container">
                 <div class="carousel-caption text-end">
-                    <h1>Os melhores instrutores.</h1>
-                    <p>Temos os melhores instrutores do país.</p>
-                    <p><a class="btn btn-lg btn-primary" href="#">Conhecer</a></p>
+                    
                 </div>
             </div>
         </div>
@@ -64,24 +54,50 @@
         </p>
     </div>
     
-    @*
+    
     <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
         @foreach (var car in Model)
-        {
-            <div class="col">
-                <div class="card mb-4 rounded-3 shadow-sm">
+    {
+        <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm">
+                
+                <div class="card-body">
+
                     <div class="card-header py-3">
                         <h4 class="my-0 fw-normal">@car.Model</h4>
                     </div>
-                    <div class="card-body">
                         <h1 class="card-title pricing-card-title">@car.Category.PriceHour€/Hour<small class="text-muted fw-light"></small></h1>
-                        @car.Category
-                        <a asp-action="Details" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-outline-primary">Saber mais</a>
-                    </div>
+                        <p>@car.Category.Name</p>
+                        <p>@car.Company.Name</p>
+                        <a asp-controller="Cars" asp-action="Details" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-outline-primary">Details</a>
+                        <br>
+                    @if (User.IsInRole("Manager") || User.IsInRole("Employee") || User.IsInRole("Admin"))
+                    {
+                        @if (@car.Available)
+                        {
+                            <a class="btn btn-primary"
+                                asp-controller="Cars"
+                                asp-action="ActivateCar"
+                               asp-route-id="@car.Id">Make Unavailable</a>
+								
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary"
+                               asp-controller="Cars"
+                                asp-action="ActivateCar"
+                                asp-route-id="@car.Id"> Make Available</a>
+                            
+                        }
+                        <a asp-controller="Cars" asp-action="Delete" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-danger">Delete</a>
+                        <br>
+                        <a asp-controller="Cars" asp-action="Edit" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-success">Edit</a>
+                    }
                 </div>
             </div>
-        }
+        </div>
+    }
     </div>
-    *@
+    
 </div>
 
