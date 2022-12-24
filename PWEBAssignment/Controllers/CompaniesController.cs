@@ -165,6 +165,19 @@ namespace PWEBAssignment.Controllers
                 return NotFound();
             }
 
+            var teste = await _context.Reservations.Where(r => r.CompanyId == id).FirstOrDefaultAsync();
+            if (teste != null)
+            {
+	            return View();
+			}
+
+            var users = await _userManager.Users.Where(u => u.CompanyID == id).ToListAsync();
+
+            foreach(var u in users)
+            {
+	            await _userManager.DeleteAsync(u);
+            }
+
             var company = await _context.Company
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (company == null)

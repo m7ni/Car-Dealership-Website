@@ -4,8 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using PWEBAssignment.Data;
 using PWEBAssignment.Models;
 using PWEBAssignment.ViewModels;
-using System.Collections.ObjectModel;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace PWEBAssignment.Controllers
 {
@@ -80,9 +78,12 @@ namespace PWEBAssignment.Controllers
 	        if (userAsked == null || userAsked.Id == userSelf.Id)
 		        return RedirectToAction(nameof(Index));
 
-	        //TODO: delete certo
-
-	        await _userManager.UpdateAsync(userAsked);
+	        var teste = await _context.Reservations.Where(r => r.ClientUserId.ToString() == userId).FirstOrDefaultAsync();
+	        if(teste!=null)
+	        {
+		        return RedirectToAction(nameof(Index));
+			}
+	        await _userManager.DeleteAsync(userAsked);
 
 	        return RedirectToAction(nameof(Index));
         }
@@ -91,10 +92,56 @@ namespace PWEBAssignment.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string type,[Bind("FirstName,LastName,Email,Password")] ManagerCreateUser newUser)
         {
+	        if (ModelState.IsValid)
+	        {
+                var verify = await _userManager.FindByEmailAsync(newUser.Email);
+
+                if (verify != null)
+                {
+                    //TODO:mostrar um toast a dizer que já há um gajo com o mesmo mail
+	                return View(newUser);
+				}
+					
 
 
-            return RedirectToAction(nameof(Index));
-        }
+				var loggedUser = await _userManager.GetUserAsync(User);
+		        var companyUser = await _context.Company.Where(c => c.Id == loggedUser.CompanyID).FirstOrDefaultAsync();
+		        var defaultUser = new ApplicationUser
+		        {
+			        UserName = newUser.Email,
+			        Email = newUser.Email,
+			        firstName = newUser.FirstName,
+			        lastName = newUser.LastName,
+			        EmailConfirmed = true,
+			        PhoneNumberConfirmed = true
+		        };
+		        var user = await _userManager.FindByEmailAsync(defaultUser.Email);
+		        if (user == null)
+		        {
+			        await _userManager.CreateAsync(defaultUser, newUser.Password);
+
+			        if (type.Equals("Manager"))
+			        {
+				        await _userManager.AddToRoleAsync(defaultUser,
+					        Roles.Manager.ToString());
+			        }
+			        else
+			        {
+				        await _userManager.AddToRoleAsync(defaultUser,
+					        Roles.Employee.ToString());
+			        }
+
+
+			        user = await _userManager.FindByEmailAsync(defaultUser.Email);
+			        companyUser.Workers.Add(user);
+			        await _context.SaveChangesAsync();
+				}
+		        
+				return RedirectToAction(nameof(Index));
+	        }
+	        return View(newUser);
+		}
+
     }
 }
 

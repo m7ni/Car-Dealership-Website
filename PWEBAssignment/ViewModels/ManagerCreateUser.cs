@@ -26,5 +26,5 @@ namespace PWEBAssignment.ViewModels
         [Display(Name = "Password")]
         public string Password { get; set; }
 
-    }
+	}
 }
