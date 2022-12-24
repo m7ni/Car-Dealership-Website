@@ -34,7 +34,7 @@ namespace PWEBAssignment.Controllers
         }
 
         // GET: Cars
-        public async Task<IActionResult> Index(Sorts? sort) /*Sorts? sort*/
+        public async Task<IActionResult> Index(Sorts? sort/*, string filter1, string filter2, string filter3*/) /*Sorts? sort*/
         {
             
 
@@ -55,13 +55,11 @@ namespace PWEBAssignment.Controllers
                 
                 if (sort == Sorts.PriceLow2High)
                 {
-                    var sortedCars = listCar.OrderBy(c => c.Category.PriceHour);
-                    return View(sortedCars);
+                    return View(listCar.OrderBy(c => c.Category.PriceHour));
                 }
                 if (sort == Sorts.PriceHigh2Low)
                 {
-                    var sortedCars = listCar.OrderByDescending(c => c.Category.PriceHour);
-                    return View(sortedCars);
+                    return View(listCar.OrderByDescending(c => c.Category.PriceHour));
                 }
                 return View(listCar);
             }
@@ -70,23 +68,19 @@ namespace PWEBAssignment.Controllers
             listCar = await cars.ToListAsync();
             if (sort == Sorts.PriceLow2High)
             {
-                var sortedCars = listCar.OrderBy(c => c.Category.PriceHour);
-                return View(sortedCars);
+                return View(listCar.OrderBy(c => c.Category.PriceHour));
             }
             if (sort == Sorts.PriceHigh2Low)
             {
-                var sortedCars = listCar.OrderByDescending(c => c.Category.PriceHour);
-                return View(sortedCars);
+                return View(listCar.OrderByDescending(c => c.Category.PriceHour));
             }
             if (sort == Sorts.RatingLow2High)
             {
-                var sortedCars = listCar.OrderBy(c => c.Company.Rating);
-                return View(sortedCars);
+                return View(listCar.OrderBy(c => c.Company.Rating));
             }
             if (sort == Sorts.RatingHigh2Low)
             {
-                var sortedCars = listCar.OrderByDescending(c => c.Company.Rating);
-                return View(sortedCars);
+                return View(listCar.OrderByDescending(c => c.Company.Rating));
             }
             return View(listCar);
         }

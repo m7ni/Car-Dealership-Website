@@ -68,7 +68,7 @@
                     </div>
                         <h1 class="card-title pricing-card-title">@car.Category.PriceHour€/Hour<small class="text-muted fw-light"></small></h1>
                         <p>@car.Category.Name</p>
-                        <p>@car.Company.Name || Avaliação: @car.Company.Rating</p>
+                        <p>@car.Company.Name || Rating: @car.Company.Rating</p>
                         <a asp-controller="Cars" asp-action="Details" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-outline-primary">Details</a>
                         <br>
                         @if (User.IsInRole("Client"))

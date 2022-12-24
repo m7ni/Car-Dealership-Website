@@ -18,30 +18,46 @@
         <h4>Filters:</h4>
         <form method="post">
             <label for="fname">Car´s Category</label>
-            <select name="CategoryID" asp-items="ViewBag.ListOfCategorys"></select>
+            <select name="CategoryID" asp-items="ViewBag.ListOfCategorys">
+                <option value="">-- Select Type --</option>
+            </select>
             <label for="fname">Car´s Company</label>
-            <select name="CompanyID" asp-items="ViewBag.ListOfCompanys"></select>
+            <select name="CompanyID" asp-items="ViewBag.ListOfCompanys">
+                <option value="">-- Select Type --</option>
+            </select>
                 
             <label for="fname">Car´s Location</label>
-            <select name="Adress" asp-items="ViewBag.ListOfAddresses"></select>
+            <select name="Adress" asp-items="ViewBag.ListOfAddresses">
+                <option value="">-- Select Type --</option>
+            </select>
                 
             <input type="submit" value="Search"/>
-
+                
         </form>
     </div>
     <div class="col-10">
         <h4>Sort By:</h4>
-
+        <select id="testSelect" runat="server" ClientIDMode="Static" required>
+            <option value="1">All</option>
+            <option value="2">Price: Low to High</option>
+            <option value="3">Price: High to Low</option>
+            <option value="4">Rating: Low to High</option>
+            <option value="5">Rating: High to Low</option>
+        </select>
         <a asp-action="Index" asp-route-sort="">All</a> |
         <a asp-action="Index" asp-route-sort="PriceLow2High">Price: Low to High</a> |
         <a asp-action="Index" asp-route-sort="PriceHigh2Low">Price: High to Low</a> |
-        <a asp-action="Index" asp-route-sort="RatingLow2High">Rating: Low to High</a> |
-        <a asp-action="Index" asp-route-sort="RatingHigh2Low">Rating: High to Low</a>
+        @if (User.IsInRole("Client") || User.IsInRole("Admin"))
+        {
+            <a asp-action="Index" asp-route-sort="RatingLow2High">Rating: Low to High</a>
+            <span>  </span>
+            <a asp-action="Index" asp-route-sort="RatingHigh2Low">Rating: High to Low</a>
+        }
+        
     </div>
 </div>
 
 <br></br>
-
 
 <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
     @foreach (var car in Model)
@@ -56,7 +72,7 @@
                     </div>
                     <h1 class="card-title pricing-card-title">@car.Category.PriceHour€/Hour<small class="text-muted fw-light"></small></h1>
                     <p>@car.Category.Name</p>
-                    <p>@car.Company.Name || Avaliação: @car.Company.Rating</p>
+                    <p>@car.Company.Name || Rating: @car.Company.Rating</p>
                     <a asp-action="Details" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-outline-primary">Details</a>
                     <br>
                     @if (User.IsInRole("Client"))
