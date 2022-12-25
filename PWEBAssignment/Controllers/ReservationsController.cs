@@ -69,6 +69,19 @@ namespace PWEBAssignment.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ClientUserId,CompanyId,CarId,DeliveryDate,ReturnDate,ReturnId,DeliveryId")] Reservations reservations)
         {
+            var dateNow = DateTime.Now;
+            if (reservations.DeliveryDate > reservations.ReturnDate)
+            {
+                ModelState.AddModelError("DeliveryDate", "The delivery date has to be before the return date");
+                return RedirectToAction(nameof(Create));
+            }
+
+            if (reservations.DeliveryDate < dateNow)
+            {
+                ModelState.AddModelError("DeliveryDate", "The delivery date can´t be before the system date");
+                return RedirectToAction(nameof(Create));
+            }
+
             ModelState.Remove(nameof(reservations.DeliveryId));
             ModelState.Remove(nameof(reservations.ReturnId));
             ModelState.Remove(nameof(reservations.Return));
