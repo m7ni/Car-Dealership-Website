@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +26,7 @@ namespace PWEBAssignment.Controllers
             _userManager = userManager;
         }
 
-        public enum Sorts
+        public enum Orders
         {
             All,
             PriceLow2High,
@@ -34,14 +36,14 @@ namespace PWEBAssignment.Controllers
         }
 
         // GET: Cars
-        public async Task<IActionResult> Index(Sorts? sort/*, string filter1, string filter2, string filter3*/) /*Sorts? sort*/
+        public async Task<IActionResult> Index(Orders? order)
         {
             
-
-            if(sort == null)
+            /*
+            if (order == null)
             {
                 ViewData["Title"] = "All cars";
-            }            
+            }*/
 
             ViewData["ListOfCompanys"] = new SelectList(_context.Company, "Id", "Name");
             ViewData["ListOfCategorys"] = new SelectList(_context.Category, "Id", "Name");
@@ -50,15 +52,17 @@ namespace PWEBAssignment.Controllers
             if (User.IsInRole("Employee") || User.IsInRole("Manager"))
             {
                 var user =await _userManager.GetUserAsync(User);
-                var carsUser = _context.Car.Include(c => c.Company).Include(d => d.Category).Where(c => c.CompanyID == user.CompanyID);
-                listCar = await carsUser.ToListAsync();
+                var carsUser = await _context.Car.Include("Categoria").ToListAsync();
+                listCar = carsUser;
                 
-                if (sort == Sorts.PriceLow2High)
+                if (order == Orders.PriceLow2High)
                 {
+                    ViewData["Title"] = "Price: Low to High";
                     return View(listCar.OrderBy(c => c.Category.PriceHour));
                 }
-                if (sort == Sorts.PriceHigh2Low)
+                if (order == Orders.PriceHigh2Low)
                 {
+                    ViewData["Title"] = "Price: High to Low";
                     return View(listCar.OrderByDescending(c => c.Category.PriceHour));
                 }
                 return View(listCar);
@@ -66,43 +70,98 @@ namespace PWEBAssignment.Controllers
 
             var cars = _context.Car.Include(c => c.Company).Include(d => d.Category).Where(c => c.Available == true);
             listCar = await cars.ToListAsync();
-            if (sort == Sorts.PriceLow2High)
+            if (order == Orders.PriceLow2High)
             {
+                ViewData["Title"] = "Price: Low to High";
                 return View(listCar.OrderBy(c => c.Category.PriceHour));
             }
-            if (sort == Sorts.PriceHigh2Low)
+            if (order == Orders.PriceHigh2Low)
             {
+                ViewData["Title"] = "Price: High to Low";
                 return View(listCar.OrderByDescending(c => c.Category.PriceHour));
             }
-            if (sort == Sorts.RatingLow2High)
+            if (order == Orders.RatingLow2High)
             {
+                ViewData["Title"] = "Rating: Low to High";
                 return View(listCar.OrderBy(c => c.Company.Rating));
             }
-            if (sort == Sorts.RatingHigh2Low)
+            if (order == Orders.RatingHigh2Low)
             {
+                ViewData["Title"] = "Rating: High to Low";
                 return View(listCar.OrderByDescending(c => c.Company.Rating));
             }
             return View(listCar);
         }
 
-        // GET: Cars/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(int CompanyID, int CategoryID/*, int AddressId*/)
         {
-            if (id == null || _context.Car == null)
+
+            if(CompanyID <= 1 && CategoryID <= 1 /*&& AddressId <= 1*/)
             {
-                return NotFound();
+                ViewData["Title"] = "List of Cars with Company: '" + CompanyID + "', Category: '" + CategoryID + "' and Location: '" +/* AddressId + */"'";
+
+                ViewData["ListOfCategorys"] = new SelectList(_context.Category.ToList(), "Id", "Name");
+                ViewData["ListOfCompanys"] = new SelectList(_context.Company.ToList(), "Id", "Name");
+                ViewData["ListOfAddresses"] = new SelectList(_context.Company.ToList(), "Id", "Address");
+                return View(await _context.Car.Include("Company")
+                    .Where(c => c.CompanyID == CompanyID
+                    && c.CategoryID == CategoryID
+                    /*&& c.Company.Address == Address*/).ToListAsync());
+            }
+            return RedirectToAction("Index");
+        }
+
+        //GET
+        public async Task<IActionResult> Search(int CompanyId, int CategoryId, int AddressId)
+        {
+
+            var searchVM = new CarSearchViewModel();
+            ViewData["Title"] = "Cars´ list with '" + searchVM + "'";
+
+            /*
+            if (string.IsNullOrEmpty(textToSearch))
+            {
+                searchVM.ListOfCars = await _context.Car.ToListAsync();
+            } else
+            {*/
+            searchVM.ListOfCars = await _context.Car.Include("Category").
+                Where(c => c.Company.Address.Contains(searchVM.textToSearch)).ToListAsync();
+
+
+            searchVM.NumResults = searchVM.ListOfCars.Count;
+
+            return View(searchVM);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Search([Bind("Category,Company,Address")] CarSearchViewModel carSearch)
+        {
+            ViewData["Title"] = "Cars´ list with '" + carSearch.textToSearch + "'";
+
+            if (carSearch.Category == null)
+            {
+            }
+            if (carSearch.Company == null)
+            {
+
+            }
+            if (carSearch.Address == null)
+            {
+
+            }
+            if (carSearch.Category != null && carSearch.Company != null && carSearch.Address != null)
+            {
+                carSearch.ListOfCars = await _context.Car.Include("Category")
+                    .Where(c => c.Company == carSearch.Company
+                    && c.Category == carSearch.Category
+                    && c.Company.Address == carSearch.Address).ToListAsync();
             }
 
-            var car = await _context.Car
-                .Include(c => c.Company).Include(
-                    d=>d.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (car == null)
-            {
-                return NotFound();
-            }
-
-            return View(car);
+            carSearch.NumResults = carSearch.ListOfCars.Count;
+            return View(carSearch);
         }
 
         // GET: Cars/Create
@@ -156,6 +215,26 @@ namespace PWEBAssignment.Controllers
             }
             ViewData["Category"] = new SelectList(_context.Category, "Id", "Name");
             ViewData["CompanyID"] = new SelectList(_context.Company, "Id", "Name", car.CompanyID);
+            return View(car);
+        }
+
+        // GET: Cars/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null || _context.Car == null)
+            {
+                return NotFound();
+            }
+
+            var car = await _context.Car
+                .Include(c => c.Company).Include(
+                    d => d.Category)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (car == null)
+            {
+                return NotFound();
+            }
+
             return View(car);
         }
 
@@ -245,47 +324,7 @@ namespace PWEBAssignment.Controllers
           return (_context.Car?.Any(e => e.Id == id)).GetValueOrDefault();
         }
         
-        //GET
-        public async Task<IActionResult> Search( string? textToSearch)
-        {
-            ViewData["Title"] = "Car´s models´ list with location '" + textToSearch + "'";
-
-            var searchVM = new CarSearchViewModel();
-            searchVM.textToSearch = textToSearch;
-
-            if (string.IsNullOrEmpty(textToSearch))
-            {
-                searchVM.ListOfCars = await _context.Car.ToListAsync();
-            } else
-            {
-                searchVM.ListOfCars = await _context.Car.Include("Category").
-                    Where(c => c.Company.Address.Contains(searchVM.textToSearch)).ToListAsync();
-            }
-
-            searchVM.NumResults = searchVM.ListOfCars.Count;
-
-            return View(searchVM);
-        }
         
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Search([Bind("textToSearch")] CarSearchViewModel carSearch)
-        {
-            ViewData["Title"] = "Lista de Carros com '" + carSearch.textToSearch + "'";
-
-            if (string.IsNullOrWhiteSpace(carSearch.textToSearch))
-            {
-                carSearch.ListOfCars = await _context.Car.Include("Category").ToListAsync();
-            }
-            else
-            {
-                carSearch.ListOfCars = await _context.Car.Include("Category")
-                    .Where(c => c.Company.Address.Contains(carSearch.textToSearch)).ToListAsync();
-            }
-
-            carSearch.NumResults = carSearch.ListOfCars.Count;
-            return View(carSearch);
-        }
 
         
         /*

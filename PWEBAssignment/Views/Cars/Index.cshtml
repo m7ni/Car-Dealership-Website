@@ -1,10 +1,13 @@
 ﻿@model IEnumerable<PWEBAssignment.Models.Car>
 
-@{
-    ViewData["Title"] = "Index";
-}
 
-<h1>Cars</h1>
+<h1>
+    Cars
+</h1>
+
+<h1>
+    @ViewData["Title"]
+</h1>
 
 @if (User.IsInRole("Employee") || User.IsInRole("Manager") || User.IsInRole("Admin"))
 {
@@ -17,41 +20,34 @@
     <div class="col-10">
         <h4>Filters:</h4>
         <form method="post">
-            <label for="fname">Car´s Category</label>
+            <label for="fname" class="control-label">Car´s Category</label>
             <select name="CategoryID" asp-items="ViewBag.ListOfCategorys">
-                <option value="">-- Select Type --</option>
+
             </select>
-            <label for="fname">Car´s Company</label>
-            <select name="CompanyID" asp-items="ViewBag.ListOfCompanys">
-                <option value="">-- Select Type --</option>
-            </select>
-                
-            <label for="fname">Car´s Location</label>
-            <select name="Adress" asp-items="ViewBag.ListOfAddresses">
-                <option value="">-- Select Type --</option>
-            </select>
-                
+            
+            <label for="fname" class="control-label">Car´s Company</label>
+            <select name="CompanyID" asp-items="ViewBag.ListOfCompanys"></select>
+              
+            <label for="fname" class="control-label">Car´s Location</label>
+            <select name="AddressId" asp-items="ViewBag.ListOfAddresses"></select>
+            
             <input type="submit" value="Search"/>
                 
         </form>
     </div>
     <div class="col-10">
-        <h4>Sort By:</h4>
-        <select id="testSelect" runat="server" ClientIDMode="Static" required>
-            <option value="1">All</option>
-            <option value="2">Price: Low to High</option>
-            <option value="3">Price: High to Low</option>
-            <option value="4">Rating: Low to High</option>
-            <option value="5">Rating: High to Low</option>
-        </select>
-        <a asp-action="Index" asp-route-sort="">All</a> |
-        <a asp-action="Index" asp-route-sort="PriceLow2High">Price: Low to High</a> |
-        <a asp-action="Index" asp-route-sort="PriceHigh2Low">Price: High to Low</a> |
+        <h4>Order By:</h4>
+        <a asp-action="Index" asp-route-order="">All</a> |
+        <a asp-action="Index" asp-route-order="PriceLow2High">Price: Low to High</a> |
+        <a asp-action="Index" asp-route-order="PriceHigh2Low">Price: High to Low</a> |
+        @if (User.IsInRole("Client") || User.IsInRole("Admin"))     //colocar também para aparecer para quem não tem role (anónimo)
+        {
+            <a asp-action="Index" asp-route-order="RatingLow2High">Rating: Low to High</a>
+        }
+        |
         @if (User.IsInRole("Client") || User.IsInRole("Admin"))
         {
-            <a asp-action="Index" asp-route-sort="RatingLow2High">Rating: Low to High</a>
-            <span>  </span>
-            <a asp-action="Index" asp-route-sort="RatingHigh2Low">Rating: High to Low</a>
+            <a asp-action="Index" asp-route-order="RatingHigh2Low">Rating: High to Low</a>
         }
         
     </div>
