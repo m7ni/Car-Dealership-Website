@@ -97,11 +97,10 @@ namespace PWEBAssignment.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(int CompanyID, int CategoryID/*, int AddressId*/)
         {
+            ViewData["Title"] = "List of Cars with Company: '" + CompanyID + "', Category: '" + CategoryID + "' and Location: '" +/* AddressId + */"'";
 
-            if(CompanyID <= 1 && CategoryID <= 1 /*&& AddressId <= 1*/)
+            if (CompanyID > 0 && CategoryID > 0 /*&& AddressId > 0*/)
             {
-                ViewData["Title"] = "List of Cars with Company: '" + CompanyID + "', Category: '" + CategoryID + "' and Location: '" +/* AddressId + */"'";
-
                 ViewData["ListOfCategorys"] = new SelectList(_context.Category.ToList(), "Id", "Name");
                 ViewData["ListOfCompanys"] = new SelectList(_context.Company.ToList(), "Id", "Name");
                 ViewData["ListOfAddresses"] = new SelectList(_context.Company.ToList(), "Id", "Address");
@@ -110,7 +109,27 @@ namespace PWEBAssignment.Controllers
                     && c.CategoryID == CategoryID
                     /*&& c.Company.Address == Address*/).ToListAsync());
             }
+            /*
+            if(CompanyID > 0 || CategoryID > 0 || AddressId > 0) 
+            {
+                var listCar = _context.Car;
+                if (CompanyID > 0)
+                {
+                    //listCar = await listCar.Where(c => c.CompanyID == CompanyID).ToListAsync();       //estar a acrescentar na pes
+                }
+                if (CategoryID > 0)
+                {
+                    //listCar.Where(c => c.CategoryID == CompanyID);
+                }
+                if (AddressId > 0)
+                {
+                    
+                }
+                return View(await listCar.ToListAsync());
+            
+            }*/
             return RedirectToAction("Index");
+            
         }
 
         //GET
