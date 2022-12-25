@@ -22,14 +22,18 @@
         <form method="post">
             <label for="fname" class="control-label">Car´s Category</label>
             <select name="CategoryID" asp-items="ViewBag.ListOfCategorys">
-
+                <option value="">Select Option</option>
             </select>
             
             <label for="fname" class="control-label">Car´s Company</label>
-            <select name="CompanyID" asp-items="ViewBag.ListOfCompanys"></select>
+            <select name="CompanyID" asp-items="ViewBag.ListOfCompanys">
+                <option value="">Select Option</option>
+            </select>
               
             <label for="fname" class="control-label">Car´s Location</label>
-            <select name="AddressId" asp-items="ViewBag.ListOfAddresses"></select>
+            <select name="AddressId" asp-items="ViewBag.ListOfAddresses">
+                <option value="">Select Option</option>
+            </select>
             
             <input type="submit" value="Search"/>
                 
