@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,24 +10,23 @@ using PWEBAssignment.Models;
 
 namespace PWEBAssignment.Controllers
 {
-    public class ReservationsController : Controller
+    public class ReservationCompanySideController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
-        public ReservationsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+
+        public ReservationCompanySideController(ApplicationDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
-        // GET: Reservations
+        // GET: ReservationCompanySide
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reservations.Include(r => r.Car).Include(r => r.Company);
+            var applicationDbContext = _context.Reservations.Include(r => r.Car).Include(r => r.Company).Include(r => r.ClientUser);
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Reservations/Details/5
+        // GET: ReservationCompanySide/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Reservations == null)
@@ -48,54 +46,33 @@ namespace PWEBAssignment.Controllers
             return View(reservations);
         }
 
-        // GET: Reservations/Create
-        public async Task<IActionResult> Create(int id)
+        // GET: ReservationCompanySide/Create
+        public IActionResult Create()
         {
             ViewData["CarId"] = new SelectList(_context.Car, "Id", "Id");
             ViewData["CompanyId"] = new SelectList(_context.Company, "Id", "Id");
-            var reserv = new Reservations();
-            var car = _context.Car.Where(c => c.Id == id).FirstOrDefault();
-            var company = await _context.Company.FirstOrDefaultAsync(c => c.Id == car.CompanyID);
-            var user = await _userManager.GetUserAsync(User);
-			reserv.CarId = car.Id;
-            reserv.CompanyId = company.Id;
-            return View(reserv);
+            return View();
         }
 
-        // POST: Reservations/Create
+        // POST: ReservationCompanySide/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ClientUserId,CompanyId,CarId,DeliveryDate,ReturnDate,ReturnId,DeliveryId")] Reservations reservations)
         {
-            ModelState.Remove(nameof(reservations.DeliveryId));
-            ModelState.Remove(nameof(reservations.ReturnId));
-            ModelState.Remove(nameof(reservations.Return));
-            ModelState.Remove(nameof(reservations.Delivery));
-            ModelState.Remove(nameof(reservations.ClientUserId));
-            ModelState.Remove(nameof(reservations.ClientUser));
-            ModelState.Remove(nameof(reservations.Car));
-            ModelState.Remove(nameof(reservations.Company));
-            reservations.ClientUser = await _userManager.GetUserAsync(User); 
-            reservations.Car = await _context.Car.FirstOrDefaultAsync(c => c.Id == reservations.CarId);
-            reservations.Company = await _context.Company.FirstOrDefaultAsync(c => c.Id == reservations.CompanyId);
-            reservations.Id = 0;
             if (ModelState.IsValid)
-            { 
-
+            {
                 _context.Add(reservations);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            var errors = ModelState.Where(x => x.Value.Errors.Any())
-                .Select(x => new { x.Key, x.Value.Errors });
             ViewData["CarId"] = new SelectList(_context.Car, "Id", "Id", reservations.CarId);
             ViewData["CompanyId"] = new SelectList(_context.Company, "Id", "Id", reservations.CompanyId);
             return View(reservations);
         }
 
-        // GET: Reservations/Edit/5
+        // GET: ReservationCompanySide/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Reservations == null)
@@ -113,7 +90,7 @@ namespace PWEBAssignment.Controllers
             return View(reservations);
         }
 
-        // POST: Reservations/Edit/5
+        // POST: ReservationCompanySide/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -150,7 +127,7 @@ namespace PWEBAssignment.Controllers
             return View(reservations);
         }
 
-        // GET: Reservations/Delete/5
+        // GET: ReservationCompanySide/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Reservations == null)
@@ -170,7 +147,7 @@ namespace PWEBAssignment.Controllers
             return View(reservations);
         }
 
-        // POST: Reservations/Delete/5
+        // POST: ReservationCompanySide/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

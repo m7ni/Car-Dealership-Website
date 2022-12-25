@@ -13,6 +13,7 @@
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/carousel.css" asp-append-version="true" />
 
 </head>
 <body>
@@ -32,7 +33,13 @@
 	                    </li>
 	                    <li class="nav-item">
 		                    <a class="nav-link" asp-area="" asp-controller="Cars" asp-action="Index">Cars</a>
-	                    </li>
+	                    </li>  
+	                    @if (User.IsInRole("Client"))
+                        {
+	                        <li class="nav-item">
+		                        <a class="nav-link" asp-area="" asp-controller="Reservations" asp-action="Index">Reservations</a>
+	                        </li>  
+                        }
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
@@ -47,12 +54,18 @@
                         }
                         @if (User.IsInRole("Manager"))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="UserManager" asp-action="Index">Users</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Cars" asp-action="Index">Cars</a>
-                            </li>
+	                        <li class="nav-item">
+		                        <a class="nav-link" asp-area="" asp-controller="UserManager" asp-action="Index">Users</a>
+	                        </li>
+	                        <li class="nav-item">
+		                        <a class="nav-link" asp-area="" asp-controller="ReservationCompanySide" asp-action="Index">Reservations</a>
+	                        </li>
+                        }
+                        @if (User.IsInRole("Employe"))
+                        {
+	                        <li class="nav-item">
+		                        <a class="nav-link" asp-area="" asp-controller="ReservationCompanySide" asp-action="Index">Reservations</a>
+	                        </li>
                         }
                     </ul>
                     <partial name="_LoginPartial" />

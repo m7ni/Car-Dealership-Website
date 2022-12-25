@@ -274,7 +274,7 @@ namespace PWEBAssignment.Data.Migrations
 
                     b.HasIndex("CompanyID");
 
-                    b.ToTable("Car");
+                    b.ToTable("Car", (string)null);
                 });
 
             modelBuilder.Entity("PWEBAssignment.Models.Category", b =>
@@ -294,7 +294,7 @@ namespace PWEBAssignment.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category");
+                    b.ToTable("Category", (string)null);
                 });
 
             modelBuilder.Entity("PWEBAssignment.Models.Company", b =>
@@ -321,7 +321,7 @@ namespace PWEBAssignment.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Company");
+                    b.ToTable("Company", (string)null);
                 });
 
             modelBuilder.Entity("PWEBAssignment.Models.Deliveries", b =>
@@ -353,7 +353,7 @@ namespace PWEBAssignment.Data.Migrations
 
                     b.HasIndex("EmployeUserId1");
 
-                    b.ToTable("Deliveries");
+                    b.ToTable("Deliveries", (string)null);
                 });
 
             modelBuilder.Entity("PWEBAssignment.Models.Reservations", b =>
@@ -396,7 +396,7 @@ namespace PWEBAssignment.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Reservations");
+                    b.ToTable("Reservations", (string)null);
                 });
 
             modelBuilder.Entity("PWEBAssignment.Models.Returns", b =>
@@ -431,7 +431,7 @@ namespace PWEBAssignment.Data.Migrations
 
                     b.HasIndex("EmployeUserId1");
 
-                    b.ToTable("Returns");
+                    b.ToTable("Returns", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

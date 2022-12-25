@@ -47,12 +47,12 @@ namespace PWEBAssignment.Controllers
 
             ViewData["ListOfCompanys"] = new SelectList(_context.Company, "Id", "Name");
             ViewData["ListOfCategorys"] = new SelectList(_context.Category, "Id", "Name");
-            ViewData["ListOfAddresses"] = new SelectList(_context.Company, "Id", "Address");
+            ViewData["ListOfAddresses"] = new SelectList(_context.Company, "Address", "Address");
             var listCar = new List<Car>();
             if (User.IsInRole("Employee") || User.IsInRole("Manager"))
             {
                 var user =await _userManager.GetUserAsync(User);
-                var carsUser = await _context.Car.Include("Categoria").ToListAsync();
+                var carsUser = await _context.Car.Include("Category").Where(c=> c.CompanyID == user.CompanyID).ToListAsync();
                 listCar = carsUser;
                 
                 if (order == Orders.PriceLow2High)
@@ -95,19 +95,23 @@ namespace PWEBAssignment.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(int CompanyID, int CategoryID/*, int AddressId*/)
+        public async Task<IActionResult> Index(int CompanyID, int CategoryID, string Address)
         {
-            ViewData["Title"] = "List of Cars with Company: '" + CompanyID + "', Category: '" + CategoryID + "' and Location: '" +/* AddressId + */"'";
+            
 
-            if (CompanyID > 0 && CategoryID > 0 /*&& AddressId > 0*/)
+            if (CompanyID > 0 && CategoryID > 0 && Address != "Select Option")
             {
+                var category = await _context.Category.FirstOrDefaultAsync(c => c.Id == CategoryID);
+                var company = await _context.Company.FirstOrDefaultAsync(c => c.Id == CompanyID);
+
+                ViewData["Title"] = "List of Cars with Company: '" + company.Name + "', Category: '" + category.Name + "' and Location: '" + Address + "'";
                 ViewData["ListOfCategorys"] = new SelectList(_context.Category.ToList(), "Id", "Name");
                 ViewData["ListOfCompanys"] = new SelectList(_context.Company.ToList(), "Id", "Name");
-                ViewData["ListOfAddresses"] = new SelectList(_context.Company.ToList(), "Id", "Address");
+                ViewData["ListOfAddresses"] = new SelectList(_context.Company.ToList(), "Address", "Address");
                 return View(await _context.Car.Include("Company")
                     .Where(c => c.CompanyID == CompanyID
                     && c.CategoryID == CategoryID
-                    /*&& c.Company.Address == Address*/).ToListAsync());
+                    && c.Company.Address == Address).ToListAsync());
             }
             /*
             if(CompanyID > 0 || CategoryID > 0 || AddressId > 0) 
@@ -132,57 +136,6 @@ namespace PWEBAssignment.Controllers
             
         }
 
-        //GET
-        public async Task<IActionResult> Search(int CompanyId, int CategoryId, int AddressId)
-        {
-
-            var searchVM = new CarSearchViewModel();
-            ViewData["Title"] = "Cars´ list with '" + searchVM + "'";
-
-            /*
-            if (string.IsNullOrEmpty(textToSearch))
-            {
-                searchVM.ListOfCars = await _context.Car.ToListAsync();
-            } else
-            {*/
-            searchVM.ListOfCars = await _context.Car.Include("Category").
-                Where(c => c.Company.Address.Contains(searchVM.textToSearch)).ToListAsync();
-
-
-            searchVM.NumResults = searchVM.ListOfCars.Count;
-
-            return View(searchVM);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Search([Bind("Category,Company,Address")] CarSearchViewModel carSearch)
-        {
-            ViewData["Title"] = "Cars´ list with '" + carSearch.textToSearch + "'";
-
-            if (carSearch.Category == null)
-            {
-            }
-            if (carSearch.Company == null)
-            {
-
-            }
-            if (carSearch.Address == null)
-            {
-
-            }
-            if (carSearch.Category != null && carSearch.Company != null && carSearch.Address != null)
-            {
-                carSearch.ListOfCars = await _context.Car.Include("Category")
-                    .Where(c => c.Company == carSearch.Company
-                    && c.Category == carSearch.Category
-                    && c.Company.Address == carSearch.Address).ToListAsync();
-            }
-
-            carSearch.NumResults = carSearch.ListOfCars.Count;
-            return View(carSearch);
-        }
-
         // GET: Cars/Create
         public async Task<IActionResult> Create()
         {
@@ -191,7 +144,6 @@ namespace PWEBAssignment.Controllers
                 var user = await _userManager.GetUserAsync(User);
                 ViewData["CompanyID"] = new SelectList(_context.Company.Where(c=> c.Id == user.CompanyID), "Id", "Name");
             }
-        
             else
             {
                 ViewData["CompanyID"] = new SelectList(_context.Company, "Id", "Name");
@@ -210,6 +162,10 @@ namespace PWEBAssignment.Controllers
         {
             ModelState.Remove(nameof(car.Category));
             ModelState.Remove(nameof(car.Company));
+
+            var testCar = await _context.Car.FirstOrDefaultAsync(c => c.LicencePlate == car.LicencePlate);
+            if(testCar != null)
+                return RedirectToAction(nameof(Create));
             if (ModelState.IsValid)
             {
                 _context.Add(car);

@@ -12,20 +12,7 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ClientUserId" class="control-label"></label>
-                <input asp-for="ClientUserId" class="form-control" />
-                <span asp-validation-for="ClientUserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CompanyId" class="control-label"></label>
-                <select asp-for="CompanyId" class ="form-control" asp-items="ViewBag.CompanyId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="CarId" class="control-label"></label>
-                <select asp-for="CarId" class ="form-control" asp-items="ViewBag.CarId"></select>
-            </div>
-            <div class="form-group">
+	        <div class="form-group">
                 <label asp-for="DeliveryDate" class="control-label"></label>
                 <input asp-for="DeliveryDate" class="form-control" />
                 <span asp-validation-for="DeliveryDate" class="text-danger"></span>
@@ -35,18 +22,8 @@
                 <input asp-for="ReturnDate" class="form-control" />
                 <span asp-validation-for="ReturnDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ReturnId" class="control-label"></label>
-                <input asp-for="ReturnId" class="form-control" />
-                <span asp-validation-for="ReturnId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DeliveryId" class="control-label"></label>
-                <input asp-for="DeliveryId" class="form-control" />
-                <span asp-validation-for="DeliveryId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+	        <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" asp-route-CompanyId="@Model.CompanyId" asp-route-CarId="@Model.CarId" />
             </div>
         </form>
     </div>

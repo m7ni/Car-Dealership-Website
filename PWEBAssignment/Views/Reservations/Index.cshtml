@@ -6,16 +6,10 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ClientUserId)
-            </th>
-            <th>
+	        <th>
                 @Html.DisplayNameFor(model => model.Company)
             </th>
             <th>
@@ -28,25 +22,25 @@
                 @Html.DisplayNameFor(model => model.ReturnDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ReturnId)
+                Situation of Reservation
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DeliveryId)
+                Return of the Car
             </th>
-            <th></th>
+            <th>
+                Details
+            </th>
+	        <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ClientUserId)
+	        <td>
+                @Html.DisplayFor(modelItem => item.Company.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Company.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Car.Id)
+                @Html.DisplayFor(modelItem => item.Car.Model)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DeliveryDate)
@@ -54,16 +48,20 @@
             <td>
                 @Html.DisplayFor(modelItem => item.ReturnDate)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReturnId)
+            @if(item.Delivery == null) 
+            {
+                <td> Pending</td>
+            } else {
+                <td>Confirmed</td> 
+            }
+            <td>   
+                @if(item.Delivery != null) 
+                {
+                    <a asp-action="Return" asp-route-id="@item.Id">Return</a>
+                }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DeliveryId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
             </td>
         </tr>
 }

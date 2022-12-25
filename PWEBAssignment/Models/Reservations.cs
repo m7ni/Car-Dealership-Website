@@ -7,6 +7,8 @@ namespace PWEBAssignment.Models
     {
         public int Id { get; set; }
         public int ClientUserId { get; set; }
+
+        [Display(Name = "Client")]
         public ApplicationUser ClientUser { get; set; }
 
         public int? CompanyId { get; set; }

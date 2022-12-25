@@ -31,7 +31,7 @@
             </select>
               
             <label for="fname" class="control-label">Car´s Location</label>
-            <select name="AddressId" asp-items="ViewBag.ListOfAddresses">
+            <select name="Address" asp-items="ViewBag.ListOfAddresses">
                 <option value="">Select Option</option>
             </select>
             
@@ -71,13 +71,15 @@
                         <h4 class="my-0 fw-normal">@car.Model</h4>
                     </div>
                     <h1 class="card-title pricing-card-title">@car.Category.PriceHour€/Hour<small class="text-muted fw-light"></small></h1>
-                    <p>@car.Category.Name</p>
-                    <p>@car.Company.Name || Rating: @car.Company.Rating</p>
+                    <p>Category: @car.Category.Name</p>
+                    <p>Company´s Name: @car.Company.Name</p>
+                    <p>Rating: @car.Company.Rating</p>
+                    <p>Location: @car.Company.Address</p>
                     <a asp-action="Details" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-outline-primary">Details</a>
                     <br>
                     @if (User.IsInRole("Client"))
                     {
-                        <a asp-controller="Reservations" asp-action="Index" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-success">Rent</a>
+                        <a asp-controller="Reservations" asp-action="Create" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-success">Rent</a>
                     }
                     @if (User.IsInRole("Manager") || User.IsInRole("Employee") || User.IsInRole("Admin"))
                     {

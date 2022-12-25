@@ -60,13 +60,13 @@ namespace PWEBAssignment.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Address,Rating,Available")] Company company)
         {
-           ModelState.Remove(nameof(company.Available));
-           ModelState.Remove(nameof(company.Rating));
-           ModelState.Remove(nameof(company.Workers));
-           ModelState.Remove(nameof(company.Cars));
+            ModelState.Remove(nameof(company.Available));
+            ModelState.Remove(nameof(company.Rating));
+            ModelState.Remove(nameof(company.Workers));
+            ModelState.Remove(nameof(company.Cars));
             if (ModelState.IsValid)
             {
-               
+
                 company.Available = false;
                 company.Rating = 0;
                 var defaultUser = new ApplicationUser
@@ -86,12 +86,12 @@ namespace PWEBAssignment.Controllers
                     await _userManager.CreateAsync(defaultUser, "Borra1.");
                     await _userManager.AddToRoleAsync(defaultUser,
                         Roles.Manager.ToString());
-
                     user = await _userManager.FindByEmailAsync(defaultUser.Email);
                     company.Workers = new Collection<ApplicationUser>();
                     company.Workers.Add(user);
                 }
 
+                company.Cars = new List<Car>();
                 _context.Add(company);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -165,19 +165,6 @@ namespace PWEBAssignment.Controllers
                 return NotFound();
             }
 
-            var teste = await _context.Reservations.Where(r => r.CompanyId == id).FirstOrDefaultAsync();
-            if (teste != null)
-            {
-	            return View();
-			}
-
-            var users = await _userManager.Users.Where(u => u.CompanyID == id).ToListAsync();
-
-            foreach(var u in users)
-            {
-	            await _userManager.DeleteAsync(u);
-            }
-
             var company = await _context.Company
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (company == null)
@@ -197,14 +184,40 @@ namespace PWEBAssignment.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Company'  is null.");
             }
+
+            var teste = await _context.Reservations.Where(r => r.CompanyId == id).FirstOrDefaultAsync();
+            if (teste != null)
+            {
+                return View();
+            }
+
+            var users = await _userManager.Users.Where(u => u.CompanyID == id).ToListAsync();
+
+            foreach (var u in users)
+            {
+                await _userManager.DeleteAsync(u);
+            }
+
+            var cars = await _context.Car.Where(u => u.CompanyID == id).ToListAsync();
+
+            foreach (var c in cars)
+            {
+                _context.Car.Remove(c);
+
+                await _context.SaveChangesAsync();
+            }
+
+
             var company = await _context.Company.FindAsync(id);
             if (company != null)
             {
                 
+
                 _context.Company.Remove(company);
+                await _context.SaveChangesAsync();
             }
             
-            await _context.SaveChangesAsync();
+          /*  await _context.SaveChangesAsync();*/
             return RedirectToAction(nameof(Index));
         }
 
