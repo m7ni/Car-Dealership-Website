@@ -67,9 +67,16 @@ namespace PWEBAssignment.Controllers
                 }
                 return View(listCar);
             }
-
-            var cars = _context.Car.Include(c => c.Company).Include(d => d.Category).Where(c => c.Available == true);
-            listCar = await cars.ToListAsync();
+            if (User.IsInRole("Admin"))
+            {
+                var cars = _context.Car.Include(c => c.Company).Include(d => d.Category);
+                listCar = await cars.ToListAsync();
+            }
+            else { 
+                var cars = _context.Car.Include(c => c.Company).Include(d => d.Category).Where(c => c.Available == true && c.Company.Available == true);
+                listCar = await cars.ToListAsync();
+            }
+            
             if (order == Orders.PriceLow2High)
             {
                 ViewData["Title"] = "Price: Low to High";
@@ -263,9 +270,16 @@ namespace PWEBAssignment.Controllers
                 return NotFound();
             }
 
+
             var car = await _context.Car
                 .Include(c => c.Company)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            var teste = await _context.Reservations.Where(r => r.CarId == id).FirstOrDefaultAsync();
+
+            if (teste!=null)
+                return View(car);
+
             if (car == null)
             {
                 return NotFound();

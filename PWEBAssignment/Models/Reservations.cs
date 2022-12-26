@@ -24,12 +24,9 @@ namespace PWEBAssignment.Models
         public DateTime ReturnDate { get; set; }
         public int? ReturnId { get; set; }
         public Returns Return { get; set; }
-
         public int? DeliveryId { get; set; }
         public Deliveries Delivery { get; set; }
-
-
-
-
+        public bool Rejected { get; set; }
+        public bool ConfirmReturn { get; set; }
     }
 }

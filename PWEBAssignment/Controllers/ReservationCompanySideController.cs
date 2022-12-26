@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,16 +14,20 @@ namespace PWEBAssignment.Controllers
     public class ReservationCompanySideController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ReservationCompanySideController(ApplicationDbContext context)
+        public ReservationCompanySideController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
             _context = context;
         }
 
         // GET: ReservationCompanySide
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reservations.Include(r => r.Car).Include(r => r.Company).Include(r => r.ClientUser);
+            var userSelf = await _userManager.GetUserAsync(User);
+            var applicationDbContext = _context.Reservations.Include(r => r.Car)
+                .Include(r => r.Company).Include(r => r.ClientUser).Where(r=> r.CompanyId == userSelf.CompanyID );
             return View(await applicationDbContext.ToListAsync());
         }
 

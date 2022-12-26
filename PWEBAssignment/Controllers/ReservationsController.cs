@@ -24,7 +24,8 @@ namespace PWEBAssignment.Controllers
         // GET: Reservations
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reservations.Include(r => r.Car).Include(r => r.Company);
+            var userSelf = await _userManager.GetUserAsync(User);
+            var applicationDbContext = _context.Reservations.Include(r => r.Car).Include(r => r.Company).Where(r => r.ClientUser == userSelf);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -67,20 +68,21 @@ namespace PWEBAssignment.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ClientUserId,CompanyId,CarId,DeliveryDate,ReturnDate,ReturnId,DeliveryId")] Reservations reservations)
+        public async Task<IActionResult> Create([Bind("Id,ClientUserId,CompanyId,CarId,DeliveryDate,ReturnDate,ReturnId,DeliveryId,Rejected,ConfirmReturn")] Reservations reservations)
         {
             var dateNow = DateTime.Now;
-            if (reservations.DeliveryDate > reservations.ReturnDate)
+            var dif1 = DateTime.Compare(reservations.DeliveryDate, reservations.ReturnDate);
+            if (dif1 > 0)
             {
                 ModelState.AddModelError("DeliveryDate", "The delivery date has to be before the return date");
-                return RedirectToAction(nameof(Create));
             }
-
-            if (reservations.DeliveryDate < dateNow)
+            var dif2 = DateTime.Compare(reservations.DeliveryDate, dateNow);
+            
+            if (dif2 < 0)
             {
                 ModelState.AddModelError("DeliveryDate", "The delivery date can´t be before the system date");
-                return RedirectToAction(nameof(Create));
             }
+            
 
             ModelState.Remove(nameof(reservations.DeliveryId));
             ModelState.Remove(nameof(reservations.ReturnId));
@@ -90,14 +92,23 @@ namespace PWEBAssignment.Controllers
             ModelState.Remove(nameof(reservations.ClientUser));
             ModelState.Remove(nameof(reservations.Car));
             ModelState.Remove(nameof(reservations.Company));
-            reservations.ClientUser = await _userManager.GetUserAsync(User); 
-            reservations.Car = await _context.Car.FirstOrDefaultAsync(c => c.Id == reservations.CarId);
-            reservations.Company = await _context.Company.FirstOrDefaultAsync(c => c.Id == reservations.CompanyId);
-            reservations.Id = 0;
+            ModelState.Remove(nameof(reservations.Rejected));
+            ModelState.Remove(nameof(reservations.ConfirmReturn));
+          
             if (ModelState.IsValid)
-            { 
+            {
 
+                reservations.ClientUser = await _userManager.GetUserAsync(User);
+                var car = await _context.Car.FirstOrDefaultAsync(c => c.Id == reservations.CarId);
+                car.Available = false;
+                reservations.Car = car;
+                reservations.Company = await _context.Company.FirstOrDefaultAsync(c => c.Id == reservations.CompanyId);
+                reservations.Id = 0;
+                reservations.Rejected = false;
+                reservations.ConfirmReturn = false;
                 _context.Add(reservations);
+                await _context.SaveChangesAsync();
+                _context.Update(car);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

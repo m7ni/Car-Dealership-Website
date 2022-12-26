@@ -14,12 +14,12 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 	        <div class="form-group">
                 <label asp-for="DeliveryDate" class="control-label"></label>
-                <input asp-for="DeliveryDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd HH:mm")" />
+                <input asp-for="DeliveryDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
                 <span asp-validation-for="DeliveryDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ReturnDate" class="control-label"></label>
-                <input asp-for="ReturnDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd HH:mm")" />
+                <input asp-for="ReturnDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
                 <span asp-validation-for="ReturnDate" class="text-danger"></span>
             </div>
 	        <div class="form-group">

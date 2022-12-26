@@ -90,8 +90,6 @@ namespace PWEBAssignment.Controllers
                     company.Workers = new Collection<ApplicationUser>();
                     company.Workers.Add(user);
                 }
-
-                company.Cars = new List<Car>();
                 _context.Add(company);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
