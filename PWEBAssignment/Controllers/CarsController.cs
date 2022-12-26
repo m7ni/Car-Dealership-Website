@@ -32,19 +32,14 @@ namespace PWEBAssignment.Controllers
             PriceLow2High,
             PriceHigh2Low,
             RatingLow2High,
-            RatingHigh2Low
+            RatingHigh2Low,
+            Available,
+            NotAvailable
         }
 
         // GET: Cars
         public async Task<IActionResult> Index(Orders? order)
         {
-            
-            /*
-            if (order == null)
-            {
-                ViewData["Title"] = "All cars";
-            }*/
-
             ViewData["ListOfCompanys"] = new SelectList(_context.Company, "Id", "Name");
             ViewData["ListOfCategorys"] = new SelectList(_context.Category, "Id", "Name");
             ViewData["ListOfAddresses"] = new SelectList(_context.Company, "Address", "Address");
@@ -65,6 +60,17 @@ namespace PWEBAssignment.Controllers
                     ViewData["Title"] = "Price: High to Low";
                     return View(listCar.OrderByDescending(c => c.Category.PriceHour));
                 }
+                if (order == Orders.Available)
+                {
+                    ViewData["Title"] = "Available Cars";
+                    return View(await _context.Car.Include("Category").Where(c => c.Available == true).ToListAsync());
+                }
+                if (order == Orders.NotAvailable)
+                {
+                    ViewData["Title"] = "Not Available Cars";
+                    return View(await _context.Car.Include("Category").Where(c => c.Available == false).ToListAsync());
+                }
+
                 return View(listCar);
             }
             if (User.IsInRole("Admin"))
@@ -120,25 +126,30 @@ namespace PWEBAssignment.Controllers
                     && c.CategoryID == CategoryID
                     && c.Company.Address == Address).ToListAsync());
             }
-            /*
-            if(CompanyID > 0 || CategoryID > 0 || AddressId > 0) 
+            
+            if(CompanyID > 0 || CategoryID > 0 || Address != "Select Option") 
             {
                 var listCar = _context.Car;
                 if (CompanyID > 0)
                 {
+                    return View(await _context.Car.Include("Company")
+                    .Where(c => c.CompanyID == CompanyID).ToListAsync());
                     //listCar = await listCar.Where(c => c.CompanyID == CompanyID).ToListAsync();       //estar a acrescentar na pes
                 }
                 if (CategoryID > 0)
                 {
+                    return View(await _context.Car.Include("Company")
+                    .Where(c => c.CategoryID == CategoryID).ToListAsync());
                     //listCar.Where(c => c.CategoryID == CompanyID);
                 }
-                if (AddressId > 0)
+                if (Address != "Select Option")
                 {
-                    
+                    return View(await _context.Car.Include("Company")
+                    .Where(c => c.Company.Address == Address).ToListAsync());
                 }
                 return View(await listCar.ToListAsync());
             
-            }*/
+            }
             return RedirectToAction("Index");
             
         }

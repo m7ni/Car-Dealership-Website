@@ -29,8 +29,18 @@ namespace PWEBAssignment.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Reservations/Details/5
-        public async Task<IActionResult> Details(int? id)
+
+        public async Task<IActionResult> Return(int id)
+        {
+	        var reservations = await _context.Reservations.FindAsync(id);
+	        reservations.ConfirmReturn = true;
+	        _context.Update(reservations);
+	        await _context.SaveChangesAsync(); 
+			return RedirectToAction(nameof(Index));
+        }
+
+		// GET: Reservations/Details/5
+		public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Reservations == null)
             {

@@ -1,14 +1,11 @@
 ﻿@model IEnumerable<PWEBAssignment.Models.Reservations>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Company´s Reservations";
 }
 
-<h1>Index</h1>
+<h1>Company´s Reservations</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -44,31 +41,43 @@
                 @Html.DisplayFor(modelItem => item.Car.LicencePlate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DeliveryDate)
+                @if (true)
+                {
+                    var newDate = item.DeliveryDate.ToString("dd/MM/yyyy");
+                }
+                 @Html.DisplayFor(modelItem => item.DeliveryDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ReturnDate)
+                @if(true)
+                {
+                    var newDate = item.ReturnDate.ToString("dd/MM/yyyy");
+                }
+                 @Html.DisplayFor(modelItem => item.ReturnDate)
             </td>
-            <td>
+            <td> 
+                
                 @Html.DisplayFor(modelItem => item.ReturnId)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DeliveryId)
             </td>
 	       
-                @if (item.Delivery == null)
+                @if (item.DeliveryId == null)
                 {
 	                <td>
-	                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
-	                </td>  
-	                <td>
-			        <a asp-action="Reject" asp-route-id="@item.Id">Details</a> 
-			        </td>
+		                <a asp-action="Deliver" asp-route-id="@item.Id">Deliver</a>
+
+		                <a asp-action="Reject" asp-route-id="@item.Id">Reject</a>
+	                </td>
 
                 }
-		      
-		        <a asp-action="ReceiveCar" asp-route-id="@item.Id">Delete</a>
-	       
+				@if (item.ConfirmReturn == true)
+				{
+					<td>
+						<a asp-action="ReceiveCar" asp-route-id="@item.Id">Receive car</a>
+					</td>
+				}
+              
         </tr>
 }
     </tbody>

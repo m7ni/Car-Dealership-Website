@@ -1,0 +1,47 @@
+﻿@model PWEBAssignment.Models.Deliveries
+
+@{
+    ViewData["Title"] = "Delivering car";
+}
+
+<h1>Deliver</h1>
+
+<h4>Reservations</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Deliver">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="NumberOfKm" class="control-label"></label>
+                <input asp-for="NumberOfKm" class="form-control" />
+                <span asp-validation-for="NumberOfKm" class="text-danger"></span>
+            </div>
+	     
+	        <div class="form-group form-check">
+		        <label class="form-check-label">
+                    <input class="form-check-input" asp-for="VehicleDamage" /> @Html.DisplayNameFor(model => model.VehicleDamage)
+		        </label>
+	        </div>
+            <div class="form-group">
+	            <label asp-for="Observations" class="control-label"></label>
+	            <textarea asp-for="Observations" class="form-control"></textarea>
+                <span asp-validation-for="Observations" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group">
+                <input type="submit" value="Deliver" class="btn btn-primary" asp-route-ReservationId="@Model.ReservationId" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

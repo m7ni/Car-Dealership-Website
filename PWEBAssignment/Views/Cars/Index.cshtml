@@ -24,7 +24,7 @@
             <select name="CategoryID" asp-items="ViewBag.ListOfCategorys">
                 <option value="">Select Option</option>
             </select>
-            
+            @if (User.IsInRole("Client") || User.IsInRole("Admin") || !User.Identity.IsAuthenticated) {
             <label for="fname" class="control-label">Car´s Company</label>
             <select name="CompanyID" asp-items="ViewBag.ListOfCompanys">
                 <option value="">Select Option</option>
@@ -34,6 +34,7 @@
             <select name="Address" asp-items="ViewBag.ListOfAddresses">
                 <option value="">Select Option</option>
             </select>
+            }
             
             <input type="submit" value="Search"/>
                 
@@ -44,16 +45,25 @@
         <a asp-action="Index" asp-route-order="">All</a> |
         <a asp-action="Index" asp-route-order="PriceLow2High">Price: Low to High</a> |
         <a asp-action="Index" asp-route-order="PriceHigh2Low">Price: High to Low</a> |
-        @if (User.IsInRole("Client") || User.IsInRole("Admin"))     //colocar também para aparecer para quem não tem role (anónimo)
+        @if (User.IsInRole("Client") || User.IsInRole("Admin") || !User.Identity.IsAuthenticated)
         {
             <a asp-action="Index" asp-route-order="RatingLow2High">Rating: Low to High</a>
         }
         |
-        @if (User.IsInRole("Client") || User.IsInRole("Admin"))
+        @if (User.IsInRole("Client") || User.IsInRole("Admin") || !User.Identity.IsAuthenticated)
         {
             <a asp-action="Index" asp-route-order="RatingHigh2Low">Rating: High to Low</a>
         }
-        
+
+        @if(User.IsInRole("Manager") || User.IsInRole("Employee") || User.IsInRole("Admin")) 
+        {
+            <a asp-action="Index" asp-route-order="Available">Available Vehicles</a>
+        }
+        |
+        @if(User.IsInRole("Manager") || User.IsInRole("Employee") || User.IsInRole("Admin")) 
+        {
+            <a asp-action="Index" asp-route-order="NotAvailale">Not Available Vehicles</a>
+        }
     </div>
 </div>
 

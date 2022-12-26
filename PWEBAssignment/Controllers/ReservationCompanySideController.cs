@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PWEBAssignment.Data;
 using PWEBAssignment.Models;
+using PWEBAssignment.ViewModels;
 
 namespace PWEBAssignment.Controllers
 {
@@ -31,8 +32,138 @@ namespace PWEBAssignment.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: ReservationCompanySide/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Deliver(int id)
+        {
+            if (_context.Reservations == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Reservations'  is null.");
+            }
+            
+            var userSelf = await _userManager.GetUserAsync(User);
+            var delivery = new Deliveries();
+            delivery.ReservationId = id;
+    
+            return View(delivery);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Deliver([Bind("Id,NumberOfKm,VehicleDamage,Observations,EmployeUserId,ReservationId")] Deliveries deliveries)
+        {
+
+
+            ModelState.Remove(nameof(deliveries.EmployeUserId));
+            ModelState.Remove(nameof(deliveries.EmployeUser));
+            ModelState.Remove(nameof(deliveries.Reservation));
+          
+            if (ModelState.IsValid)
+            {
+                var reservations = await _context.Reservations.FindAsync(deliveries.ReservationId);
+                var userSelf = await _userManager.GetUserAsync(User);
+                deliveries.EmployeUser = userSelf;
+                deliveries.Id = 0;
+                deliveries.Reservation = reservations;
+                _context.Add(deliveries);
+                await _context.SaveChangesAsync();
+
+                reservations.DeliveryId = deliveries.Id;
+                reservations.Delivery = deliveries;
+
+                _context.Update(reservations);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            
+            return View(deliveries);
+        }
+
+        public async Task<IActionResult> ReceiveCar(int id)
+        {
+	        if (_context.Reservations == null)
+	        {
+		        return Problem("Entity set 'ApplicationDbContext.Reservations'  is null.");
+	        }
+
+	        
+	        var ret = new ReturnViewModel();
+            ret.ReservationId = id;
+
+	        return View(ret);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReceiveCar([Bind("NumberOfKm,VehicleDamage,PhotoEvidenceFile,Observations,EmployeUserId,ReservationId")] ReturnViewModel returnvm)
+        {
+
+
+	        ModelState.Remove(nameof(returnvm.EmployeUserId));
+	        ModelState.Remove(nameof(returnvm.PhotoEvidenceFile));
+
+			if (returnvm.PhotoEvidenceFile != null)
+            {
+                if (returnvm.PhotoEvidenceFile.Length > (200 * 1024))
+                {
+                    ModelState.AddModelError("PhotoEvidenceFile", "Error: Ficheiro demasiado grande");
+                }
+
+                if (!IsValidFileType(returnvm.PhotoEvidenceFile.FileName))
+                {
+                    ModelState.AddModelError("PhotoEvidenceFile", "Error: Ficheiro não suportado");
+                }
+
+				
+			}
+			if (ModelState.IsValid)
+			{
+				var returns = new Returns
+					{
+                    NumberOfKm = returnvm.NumberOfKm,
+                    VehicleDamage = returnvm.VehicleDamage,
+                    Observations = returnvm.Observations,
+					};
+
+				if (returnvm.PhotoEvidenceFile != null)
+				{
+					using (var dataStream = new MemoryStream())
+					{
+						await returnvm.PhotoEvidenceFile.CopyToAsync(dataStream);
+						returns.PhotoEvidence = dataStream.ToArray();
+					}
+				}
+
+				var reservations = await _context.Reservations.FindAsync(returnvm.ReservationId);
+		        var userSelf = await _userManager.GetUserAsync(User);
+		        returns.EmployeUser = userSelf;
+		        returns.Id = 0;
+		        returns.ReservationId = reservations.Id;
+		        returns.Reservation = reservations;
+
+					_context.Add(returns);
+		        await _context.SaveChangesAsync();
+
+		        reservations.ReturnId = returns.Id;
+		        reservations.Return = returns;
+
+		        _context.Update(reservations);
+		        await _context.SaveChangesAsync();
+
+		        return RedirectToAction(nameof(Index));
+	        }
+
+	        return View();
+        }
+
+
+        public bool IsValidFileType(string fileName) // .jpg, .png, .jpeg
+        {
+	        var valid_extensions = new[] { ".jpg", ".png", ".jpeg" };
+	        var ext = Path.GetExtension(fileName);
+	        return valid_extensions.Contains(ext);
+        }
+		// GET: ReservationCompanySide/Details/5
+		public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Reservations == null)
             {
@@ -51,31 +182,6 @@ namespace PWEBAssignment.Controllers
             return View(reservations);
         }
 
-        // GET: ReservationCompanySide/Create
-        public IActionResult Create()
-        {
-            ViewData["CarId"] = new SelectList(_context.Car, "Id", "Id");
-            ViewData["CompanyId"] = new SelectList(_context.Company, "Id", "Id");
-            return View();
-        }
-
-        // POST: ReservationCompanySide/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ClientUserId,CompanyId,CarId,DeliveryDate,ReturnDate,ReturnId,DeliveryId")] Reservations reservations)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(reservations);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CarId"] = new SelectList(_context.Car, "Id", "Id", reservations.CarId);
-            ViewData["CompanyId"] = new SelectList(_context.Company, "Id", "Id", reservations.CompanyId);
-            return View(reservations);
-        }
 
         // GET: ReservationCompanySide/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -161,7 +267,12 @@ namespace PWEBAssignment.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Reservations'  is null.");
             }
+            
             var reservations = await _context.Reservations.FindAsync(id);
+
+            if(reservations.Rejected == false)
+                return RedirectToAction(nameof(Index));
+
             if (reservations != null)
             {
                 _context.Reservations.Remove(reservations);
@@ -175,5 +286,25 @@ namespace PWEBAssignment.Controllers
         {
           return (_context.Reservations?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Reject(int id)
+        {
+            if (_context.Reservations == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Reservations'  is null.");
+            }
+            var reservations = await _context.Reservations.FindAsync(id);
+            if (reservations != null)
+            {
+                reservations.Rejected = true;
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        
     }
 }

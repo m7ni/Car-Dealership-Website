@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<PWEBAssignment.Models.Reservations>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "My Reservations";
 }
 
 <h1>Index</h1>
@@ -43,21 +43,35 @@
                 @Html.DisplayFor(modelItem => item.Car.Model)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.DeliveryDate)
+                @if (true)
+                {
+                    var newDate = item.DeliveryDate.ToString("dd/MM/yyyy");
+                }
+                    @Html.DisplayFor(modelItem => item.DeliveryDate) 
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.ReturnDate)
+                @if(true)
+                {
+                    var newDate = item.ReturnDate.ToString("dd/MM/yyyy");
+                }
+                    @Html.DisplayFor(modelItem => item.ReturnDate) 
             </td>
-            @if(item.Delivery == null) 
+            @if(item.DeliveryId == null) 
             {
                 <td> Pending</td>
             } else {
                 <td>Confirmed</td> 
             }
             <td>   
-                @if(item.Delivery != null) 
+                @if(item.DeliveryId != null && item.ReturnId == null) 
                 {
-                    <a asp-action="Return" asp-route-id="@item.Id">Return</a>
+                    <td>
+                        <a asp-action="Return" asp-route-id="@item.Id">Return</a>
+                    </td>
+                }
+                else if(item.DeliveryId != null && item.ReturnId != null)
+                {
+                    <td>Already Returned</td>
                 }
             </td>
             <td>
