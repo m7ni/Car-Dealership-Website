@@ -54,7 +54,7 @@
         {
             <a asp-action="Index" asp-route-order="RatingHigh2Low">Rating: High to Low</a>
         }
-
+        |
         @if(User.IsInRole("Manager") || User.IsInRole("Employee") || User.IsInRole("Admin")) 
         {
             <a asp-action="Index" asp-route-order="Available">Available Vehicles</a>
