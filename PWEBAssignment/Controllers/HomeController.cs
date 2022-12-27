@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using System.Diagnostics;
+using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using PWEBAssignment.Data;
 using PWEBAssignment.Models;
@@ -13,19 +14,20 @@ namespace PWEB_P6.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        private readonly INotyfService _toastNotification;
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager, INotyfService toastNotification)
         {
             _logger = logger;
             _context = context;
             _userManager = userManager;
+            _toastNotification = toastNotification;
         }
 
         public async Task<IActionResult> Index()
         {
             ViewData["ListOfCompanys"] = new SelectList(_context.Company, "Id", "Name");
             ViewData["ListOfCategorys"] = new SelectList(_context.Category, "Id", "Name");
-
+          
 
             if (User.IsInRole("Employee") || User.IsInRole("Manager"))
             {

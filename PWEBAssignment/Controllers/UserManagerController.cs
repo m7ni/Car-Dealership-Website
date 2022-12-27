@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +15,12 @@ namespace PWEBAssignment.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public UserManagerController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        private readonly INotyfService _toastNotification;
+        public UserManagerController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, INotyfService toastNotification)
         {
             _context = context;
             _userManager = userManager;
+            _toastNotification = toastNotification;
         }
         public async Task<IActionResult> Index()
         {
@@ -60,7 +63,11 @@ namespace PWEBAssignment.Controllers
             var userSelf = await _userManager.GetUserAsync(User);
 
             if (userAsked == null || userAsked.Id == userSelf.Id)
+            {
+                _toastNotification.Information("You cannot change the status of yourself", 3);
                 return RedirectToAction(nameof(Index));
+            }
+                
             
             if (userAsked.available)
                 userAsked.available = false;
@@ -101,8 +108,8 @@ namespace PWEBAssignment.Controllers
 
                 if (verify != null)
                 {
-                    //TODO:mostrar um toast a dizer que já há um gajo com o mesmo mail
-	                return View(newUser);
+                    _toastNotification.Information("An account with that email already exists in the database", 3);
+                    return View(newUser);
 				}
 					
 

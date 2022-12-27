@@ -71,12 +71,15 @@
 	                </td>
 
                 }
-				@if (item.ConfirmReturn == true)
+				@if (item.ConfirmReturn == true && item.ReturnId == null)
 				{
 					<td>
 						<a asp-action="ReceiveCar" asp-route-id="@item.Id">Receive car</a>
 					</td>
 				}
+                <td>
+	                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                </td>
               
         </tr>
 }

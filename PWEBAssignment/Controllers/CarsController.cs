@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Net;
-using System.Runtime.ConstrainedExecution;
-using System.Threading.Tasks;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,20 +6,22 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PWEBAssignment.Data;
 using PWEBAssignment.Models;
-using PWEBAssignment.ViewModels;
-//using Microsoft.AspNetCore.Identity;
+using System.Data;
+
 
 namespace PWEBAssignment.Controllers
 {
-    
-    public class CarsController : Controller
+
+	public class CarsController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public CarsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        private readonly INotyfService _toastNotification;
+        public CarsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, INotyfService toastNotification)
         {
-            _context = context;
-            _userManager = userManager;
+	        _context = context;
+	        _userManager = userManager;
+            _toastNotification = toastNotification;
         }
 
         public enum Orders
@@ -45,11 +41,14 @@ namespace PWEBAssignment.Controllers
             ViewData["ListOfCompanys"] = new SelectList(_context.Company, "Id", "Name");
             ViewData["ListOfCategorys"] = new SelectList(_context.Category, "Id", "Name");
             ViewData["ListOfAddresses"] = new SelectList(_context.Company, "Address", "Address");
+
             var listCar = new List<Car>();
+
             if (User.IsInRole("Employee") || User.IsInRole("Manager"))
             {
-                var user =await _userManager.GetUserAsync(User);
-                var carsUser = await _context.Car.Include("Category").Include("Company").Where(c=> c.CompanyID == user.CompanyID).ToListAsync();
+                var userSelf = await _userManager.GetUserAsync(User);
+                var carsUser = await _context.Car.Include("Category").Include("Company").Where(c=> c.CompanyID == userSelf.CompanyID).ToListAsync();
+
                 listCar = carsUser;
                 
                 if (order == Orders.PriceLow2High)
@@ -123,6 +122,7 @@ namespace PWEBAssignment.Controllers
                 ViewData["ListOfCategorys"] = new SelectList(_context.Category.ToList(), "Id", "Name");
                 ViewData["ListOfCompanys"] = new SelectList(_context.Company.ToList(), "Id", "Name");
                 ViewData["ListOfAddresses"] = new SelectList(_context.Company.ToList(), "Address", "Address");
+
                 return View(await _context.Car.Include("Company")
                     .Where(c => c.CompanyID == CompanyID
                     && c.CategoryID == CategoryID
@@ -158,7 +158,7 @@ namespace PWEBAssignment.Controllers
             
         }
 
-		// GET: Cars/Create
+		
 		[Authorize(Roles = "Admin,Employee,Manager")]
 		public async Task<IActionResult> Create()
         {
@@ -176,9 +176,7 @@ namespace PWEBAssignment.Controllers
             return View();
         }
 
-		// POST: Cars/Create
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		
 		[Authorize(Roles = "Admin,Employee,Manager")]
 		[HttpPost]
         [ValidateAntiForgeryToken]
@@ -188,8 +186,12 @@ namespace PWEBAssignment.Controllers
             ModelState.Remove(nameof(car.Company));
 
             var testCar = await _context.Car.FirstOrDefaultAsync(c => c.LicencePlate == car.LicencePlate);
-            if(testCar != null)
+            if (testCar != null)
+            {
+                _toastNotification.Error("That licence Plate already exists in the Database", 4);
                 return RedirectToAction(nameof(Create));
+            }
+                
             if (ModelState.IsValid)
             {
 	            var company = await _context.Company.FindAsync(car.CategoryID);
@@ -201,7 +203,6 @@ namespace PWEBAssignment.Controllers
             return RedirectToAction(nameof(Create));
         }
 
-		// GET: Cars/Edit/5
 
 		[Authorize(Roles = "Admin,Employee,Manager")]
 		public async Task<IActionResult> Edit(int? id)
@@ -335,28 +336,6 @@ namespace PWEBAssignment.Controllers
           return (_context.Car?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-
-
-
-		/*
-        public async Task<IActionResult> Reservation(int? id)
-        {
-            if (id == null || _context.Car == null)
-            {
-                return NotFound();
-            }
-
-            //var car = RedirectToAction(nameof(CarExists(id)));
-            //if (car == false)
-            //{
-            //    return NotFound();
-            //}
-
-            //return View(Reservations);
-            return RedirectToAction("Index");
-        }*/
-
-
 		[Authorize(Roles = "Admin,Employee,Manager")]
 		public async Task<IActionResult> ActivateCar(int id)
         {
@@ -364,6 +343,7 @@ namespace PWEBAssignment.Controllers
 
             if (car == null)
                 return RedirectToAction(nameof(Index));
+
 
             if (car.Available)
                 car.Available = false;

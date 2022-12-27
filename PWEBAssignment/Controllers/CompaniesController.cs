@@ -67,43 +67,68 @@ namespace PWEBAssignment.Controllers
             ModelState.Remove(nameof(company.Rating));
             ModelState.Remove(nameof(company.Workers));
             ModelState.Remove(nameof(company.Cars));
-            if (ModelState.IsValid)
-            {
 
-                company.Available = false;
-                company.Rating = 0;
-                var defaultUser = new ApplicationUser
-                {
-                    UserName = company.Name.Replace(" ", "") + "@gmail.com",
-                    Email = company.Name.Replace(" ", "") + "@gmail.com",
-                    firstName = "Manager",
-                    lastName = company.Name.Replace(" ", ""),
-                    EmailConfirmed = true,
-                    PhoneNumberConfirmed = true
-                };
-                var user = await _userManager.FindByEmailAsync(defaultUser.Email);
-                string[] substrings = company.Name.Split(' ');
-                var password = string.Join("", substrings).ToUpper() + "." + "0";
-                if (user == null)
-                {
-                    await _userManager.CreateAsync(defaultUser, "Borra1.");
-                    await _userManager.AddToRoleAsync(defaultUser,
-                        Roles.Manager.ToString());
-                    user = await _userManager.FindByEmailAsync(defaultUser.Email);
-                    company.Workers = new Collection<ApplicationUser>();
-                    company.Workers.Add(user);
-                }
-                _context.Add(company);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+            if (!ModelState.IsValid)
+	            return View(company);
+
+			company.Available = false;
+            company.Rating = 0;
+            var defaultUser = new ApplicationUser
+            {
+                UserName = company.Name.Replace(" ", "") + "@gmail.com",
+                Email = company.Name.Replace(" ", "") + "@gmail.com",
+                firstName = "Manager",
+                lastName = company.Name.Replace(" ", ""),
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true
+            };
+            var user = await _userManager.FindByEmailAsync(defaultUser.Email);
+
+            if (user == null)
+            {
+                await _userManager.CreateAsync(defaultUser, FormatString(company.Name));
+                await _userManager.AddToRoleAsync(defaultUser,
+                    Roles.Manager.ToString());
+                user = await _userManager.FindByEmailAsync(defaultUser.Email);
+                company.Workers = new Collection<ApplicationUser>();
+                company.Workers.Add(user);
             }
-            var errors = ModelState.Where(x => x.Value.Errors.Any())
-                .Select(x => new { x.Key, x.Value.Errors });
-            return View(company);
+
+            _context.Add(company);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+            
+           
+           
         }
 
-        // GET: Companies/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+		public static string FormatString(string input)
+		{
+			input = input.ToLowerInvariant();
+
+			string[] words = input.Split(' ');
+
+			string firstLetter = words[0].Substring(0, 1).ToUpperInvariant();
+
+			string output = string.Concat(firstLetter, words[0].Substring(1));
+
+			for (int i = 1; i < words.Length; i++)
+			{
+				output = string.Concat(output, words[i]);
+			}
+
+			output = output.TrimEnd();
+
+			output = string.Concat(output, ".0");
+
+			return output;
+		}
+		
+
+
+
+		// GET: Companies/Edit/5
+		public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Company == null)
             {

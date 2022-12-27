@@ -13,7 +13,7 @@ using PWEBAssignment.Models;
 
 namespace PWEBAssignment.Controllers
 {
-	[Authorize(Roles = "Client")]
+	[Authorize(Roles = "Client,Admin")]
 	public class ReservationsController : Controller
     {
         private readonly ApplicationDbContext _context;

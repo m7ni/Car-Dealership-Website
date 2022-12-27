@@ -63,7 +63,7 @@
                 <td>Confirmed</td> 
             }
             <td>   
-                @if(item.DeliveryId != null && item.ReturnId == null) 
+                @if(item.DeliveryId != null && !item.ConfirmReturn ) 
                 {
                     <td>
                         <a asp-action="Return" asp-route-id="@item.Id">Return</a>
