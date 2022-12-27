@@ -5,8 +5,7 @@ namespace PWEBAssignment.ViewModels
 {
 	public class ReturnViewModel
 	{
-		public IFormFile PhotoEvidenceFile { get; set; }
-
+		public byte[]? PhotoEvidence { get; set; }
 		[Display(Name = "Number of KM", Description = "Number of KM that the car had on return", Prompt = "Insert the number of KM that the car had on return")]
 		public string NumberOfKm { get; set; }
 

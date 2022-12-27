@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PWEBAssignment.Data;
 
@@ -11,9 +12,11 @@ using PWEBAssignment.Data;
 namespace PWEBAssignment.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221227222958_changedTypePrice")]
+    partial class changedTypePrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -289,8 +292,8 @@ namespace PWEBAssignment.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("PriceHour")
-                        .HasColumnType("float");
+                    b.Property<decimal>("PriceHour")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

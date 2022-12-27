@@ -18,7 +18,8 @@ namespace PWEBAssignment.Controllers
 	[Authorize(Roles = "Admin,Employee,Manager")]
 	public class ReservationCompanySideController : Controller
     {
-        private readonly ApplicationDbContext _context;
+	    private readonly string _returnsPath = "wwwroot/ficheiros/Returns/";
+		private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public ReservationCompanySideController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
@@ -82,7 +83,33 @@ namespace PWEBAssignment.Controllers
             return View(deliveries);
         }
 
-        public async Task<IActionResult> ReceiveCar(int id)
+        public async Task<IActionResult> DeleteImage(int? id, string? image)
+        {
+	        if (id == null || _context.Returns == null)
+	        {
+		        return NotFound();
+	        }
+
+	        var returns = await _context.Returns.FindAsync(id);
+	        if (returns == null)
+	        {
+		        return NotFound();
+	        }
+
+	        var filePath = Path.Combine(Directory.GetCurrentDirectory(), $"{_returnsPath[..7]}/{image}");
+
+	        try
+	        {
+		        System.IO.File.Delete(filePath);
+	        }
+	        catch
+	        {
+		        return NotFound();
+	        }
+
+	        return RedirectToAction(nameof(Edit), new { Id = id });
+        }
+		public async Task<IActionResult> ReceiveCar(int id)
         {
 	        if (_context.Reservations == null)
 	        {
@@ -98,46 +125,26 @@ namespace PWEBAssignment.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ReceiveCar([Bind("NumberOfKm,VehicleDamage,PhotoEvidenceFile,Observations,EmployeUserId,ReservationId")] ReturnViewModel returnvm)
+        public async Task<IActionResult> ReceiveCar([Bind("NumberOfKm,VehicleDamage,Observations,EmployeUserId,ReservationId")] ReturnViewModel returnvm, [FromForm] List<IFormFile> files)
         {
 
 
 	        ModelState.Remove(nameof(returnvm.EmployeUserId));
-	        ModelState.Remove(nameof(returnvm.PhotoEvidenceFile));
+	       
 
-			if (returnvm.PhotoEvidenceFile != null)
-            {
-                if (returnvm.PhotoEvidenceFile.Length > (200 * 1024))
-                {
-                    ModelState.AddModelError("PhotoEvidenceFile", "Error: Ficheiro demasiado grande");
-                }
-
-                if (!IsValidFileType(returnvm.PhotoEvidenceFile.FileName))
-                {
-                    ModelState.AddModelError("PhotoEvidenceFile", "Error: Ficheiro não suportado");
-                }
-
-				
-			}
 			if (ModelState.IsValid)
 			{
 				var returns = new Returns
-					{
-                    NumberOfKm = returnvm.NumberOfKm,
+				{
+					NumberOfKm = returnvm.NumberOfKm,
                     VehicleDamage = returnvm.VehicleDamage,
                     Observations = returnvm.Observations,
-					};
+				};
 
-				if (returnvm.PhotoEvidenceFile != null)
-				{
-					using (var dataStream = new MemoryStream())
-					{
-						await returnvm.PhotoEvidenceFile.CopyToAsync(dataStream);
-						returns.PhotoEvidence = dataStream.ToArray();
-					}
-				}
+		
 
 				var reservations = await _context.Reservations.FindAsync(returnvm.ReservationId);
+				reservations.DeliveryDate = DateTime.Now;
 		        var userSelf = await _userManager.GetUserAsync(User);
 		        returns.EmployeUser = userSelf;
 		        returns.Id = 0;
@@ -146,14 +153,42 @@ namespace PWEBAssignment.Controllers
 
 					_context.Add(returns);
 		        await _context.SaveChangesAsync();
-
-		        reservations.ReturnId = returns.Id;
+				var car = await _context.Car.FindAsync(reservations.CarId);
+				car.Available = true;
+				reservations.ReturnId = returns.Id;
 		        reservations.Return = returns;
 
 		        _context.Update(reservations);
 		        await _context.SaveChangesAsync();
 
-		        return RedirectToAction(nameof(Index));
+
+		        var coursePath = Path.Combine(
+			        Directory.GetCurrentDirectory(),
+			        Path.Combine(_returnsPath, returns.Id.ToString())
+		        );
+		        if (!Directory.Exists(coursePath))
+			        Directory.CreateDirectory(coursePath);
+
+		        foreach (var formFile in files)
+		        {
+			        if (formFile.Length <= 0) continue;
+
+			        var filePath = Path.Combine(
+				        coursePath,
+				        $"{Guid.NewGuid()}{Path.GetExtension(formFile.FileName)}"
+			        );
+			        while (System.IO.File.Exists(filePath))
+			        {
+				        filePath = Path.Combine(
+					        coursePath,
+					        $"{Guid.NewGuid()}{Path.GetExtension(formFile.FileName)}"
+				        );
+			        }
+
+			        await using var stream = System.IO.File.Create(filePath);
+			        await formFile.CopyToAsync(stream);
+		        }
+				return RedirectToAction(nameof(Index));
 	        }
 
 	        return View();
@@ -177,13 +212,34 @@ namespace PWEBAssignment.Controllers
             var reservations = await _context.Reservations
                 .Include(r => r.Car)
                 .Include(r => r.Company)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(r=>r.ClientUser)
+                .Include(r => r.Return.EmployeUser)
+                .Include(r => r.Delivery.EmployeUser)
+                .Include(r => r.Return)
+                .Include(r => r.Delivery)
+				.FirstOrDefaultAsync(m => m.Id == id);
+            
+            
+            
             if (reservations == null)
             {
                 return NotFound();
             }
+            var coursePath = Path.Combine(
+	            Directory.GetCurrentDirectory(),
+	            Path.Combine(_returnsPath, id.GetValueOrDefault().ToString())
+            );
 
-            return View(reservations);
+            var files = new List<string>();
+
+            if (Directory.Exists(coursePath))
+	            files = (
+		            from file in Directory.EnumerateFiles(coursePath)
+		            select Path.Combine(_returnsPath[7..], $"{id}/{Path.GetFileName(file)}")
+	            ).ToList();
+
+            ViewData["Files"] = files;
+			return View(reservations);
         }
 
 
@@ -195,12 +251,14 @@ namespace PWEBAssignment.Controllers
                 return NotFound();
             }
 
+
             var reservations = await _context.Reservations.FindAsync(id);
             if (reservations == null)
             {
                 return NotFound();
             }
-            ViewData["CarId"] = new SelectList(_context.Car, "Id", "Id", reservations.CarId);
+           
+			ViewData["CarId"] = new SelectList(_context.Car, "Id", "Id", reservations.CarId);
             ViewData["CompanyId"] = new SelectList(_context.Company, "Id", "Id", reservations.CompanyId);
             return View(reservations);
         }

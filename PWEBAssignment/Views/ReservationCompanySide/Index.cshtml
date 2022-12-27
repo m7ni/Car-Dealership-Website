@@ -22,12 +22,10 @@
                 @Html.DisplayNameFor(model => model.ReturnDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ReturnId)
+               Status
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeliveryId)
-            </th>
-            <th></th>
+	        <th></th>
+	        <th></th>
         </tr>
     </thead>
     <tbody>
@@ -35,32 +33,31 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.ClientUser.firstName)
-                    @Html.DisplayFor(modelItem => item.ClientUser.lastName)
+	            @Html.DisplayFor(modelItem => item.ClientUser.lastName)
             </td>
 	        <td>
-                @Html.DisplayFor(modelItem => item.Car.LicencePlate)
+		        @Html.DisplayFor(modelItem => item.Car.Model)
+		         [@Html.DisplayFor(modelItem => item.Car.LicencePlate)]
+	        </td>
+            <td>
+	            @item.DeliveryDate.ToString("dd/MM/yyyy")
             </td>
             <td>
-                @if (true)
+	            @item.ReturnDate.ToString("dd/MM/yyyy")
+            </td>
+	        @if (item.DeliveryId == null)
                 {
-                    var newDate = item.DeliveryDate.ToString("dd/MM/yyyy");
+	                <td>Pending</td>
                 }
-                 @Html.DisplayFor(modelItem => item.DeliveryDate)
-            </td>
-            <td>
-                @if(true)
+                else if (item.DeliveryId != null && item.ReturnId == null)
                 {
-                    var newDate = item.ReturnDate.ToString("dd/MM/yyyy");
+	                <td>Confirmed</td>
                 }
-                 @Html.DisplayFor(modelItem => item.ReturnDate)
-            </td>
-            <td> 
-                
-                @Html.DisplayFor(modelItem => item.ReturnId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeliveryId)
-            </td>
+                else
+                {
+	                <td>Closed</td>
+                }
+	       
 	       
                 @if (item.DeliveryId == null)
                 {

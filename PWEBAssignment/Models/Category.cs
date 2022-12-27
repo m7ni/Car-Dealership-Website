@@ -10,7 +10,7 @@ namespace PWEBAssignment.Models
         [Display(Name = "Name", Description = "Car's Category", Prompt = "Insert the category of the car")]
         public string Name { get; set; }
         [Display(Name = "Price", Description = "Car's Reservation Price per day (Y/N)", Prompt = "Insert the price of the car")]
-        public decimal PriceHour { get; set; }
+        public Double PriceHour { get; set; }
 
         public ICollection<Car> Car { get; set; }
     }

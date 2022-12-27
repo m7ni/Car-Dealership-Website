@@ -10,48 +10,51 @@
     <h4>Reservations</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ClientUserId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ClientUserId)
-        </dd>
-        <dt class = "col-sm-2">
+	    <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Company)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Company.Id)
-        </dd>
+	    <dd class = "col-sm-10">
+		    @Html.DisplayFor(model => model.Company.Name)
+	    </dd>
+	    <dt class = "col-sm-2">
+		    Company's Adress
+	    </dt>
+	    <dd class = "col-sm-10">
+		    @Html.DisplayFor(model => model.Company.Address)
+	    </dd>
+	    <dt class = "col-sm-2">
+		   Company's Rating
+	    </dt>
+	    <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Company.Rating)
+	    </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Car)
+            Rented Car
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Car.Id)
+            @Html.DisplayFor(model => model.Car.Model)
+            [@Html.DisplayFor(model => model.Car.LicencePlate)]
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.DeliveryDate)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DeliveryDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ReturnDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ReturnDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ReturnId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ReturnId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DeliveryId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DeliveryId)
-        </dd>
+	    <dd class="col-sm-10">
+			@Model.DeliveryDate.ToString("dd/MM/yyyy")
+	    </dd>
+	    <dt class="col-sm-2">
+		 
+		    @Html.DisplayNameFor(model => model.ReturnDate)
+	    </dt>
+	    <dd class = "col-sm-10">
+		    @Model.ReturnDate.ToString("dd/MM/yyyy")
+	    </dd>
+	    <dt class="col-sm-2">
+		 
+		    Cost
+	    </dt>
+	    <dd class = "col-sm-10">
+		    @Html.DisplayFor(model => model.Price)
+	    </dd>
     </dl>
 </div>
 <div>

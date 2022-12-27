@@ -87,13 +87,13 @@ namespace PWEBAssignment.Controllers
             var dif1 = DateTime.Compare(reservations.DeliveryDate, reservations.ReturnDate);
             if (dif1 > 0)
             {
-                ModelState.AddModelError("DeliveryDate", "The delivery date has to be before the return date");
+                ModelState.AddModelError("DeliveryDate", "The delivery date needs to be before than the return date");
             }
             var dif2 = DateTime.Compare(reservations.DeliveryDate, dateNow);
             
             if (dif2 < 0)
             {
-                ModelState.AddModelError("DeliveryDate", "The delivery date can´t be before the system date");
+                ModelState.AddModelError("DeliveryDate", "You can only rent a car from tomorrow");
             }
             
 
@@ -107,8 +107,9 @@ namespace PWEBAssignment.Controllers
             ModelState.Remove(nameof(reservations.Company));
             ModelState.Remove(nameof(reservations.Rejected));
             ModelState.Remove(nameof(reservations.ConfirmReturn));
-          
-            if (ModelState.IsValid)
+            ModelState.Remove(nameof(reservations.Price));
+
+			if (ModelState.IsValid)
             {
 
                 reservations.ClientUser = await _userManager.GetUserAsync(User);
@@ -119,6 +120,8 @@ namespace PWEBAssignment.Controllers
                 reservations.Id = 0;
                 reservations.Rejected = false;
                 reservations.ConfirmReturn = false;
+                reservations.Price = (reservations.ReturnDate - reservations.DeliveryDate).TotalHours *
+                                     reservations.Car.Category.PriceHour;
                 _context.Add(reservations);
                 await _context.SaveChangesAsync();
                 _context.Update(car);

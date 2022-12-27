@@ -9,24 +9,32 @@
 <h4>Reservations</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-	        <div class="form-group">
-                <label asp-for="DeliveryDate" class="control-label"></label>
-                <input asp-for="DeliveryDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                <span asp-validation-for="DeliveryDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ReturnDate" class="control-label"></label>
-                <input asp-for="ReturnDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                <span asp-validation-for="ReturnDate" class="text-danger"></span>
-            </div>
-	        <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" asp-route-CompanyId="@Model.CompanyId" asp-route-CarId="@Model.CarId" />
-            </div>
-        </form>
-    </div>
+	<div class="col-md-4">
+	@*	<dl>
+			<dt class = "col-sm-2">
+				Cost
+			</dt>
+			<dd class = "col-sm-10">
+				
+			</dd>
+		</dl>*@
+		<form asp-action="Create">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<div class="form-group">
+				<label asp-for="DeliveryDate" class="control-label"></label>
+				<input asp-for="DeliveryDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")"/>
+				<span asp-validation-for="DeliveryDate" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="ReturnDate" class="control-label"></label>
+				<input asp-for="ReturnDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")"/>
+				<span asp-validation-for="ReturnDate" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<input type="submit" value="Create" class="btn btn-primary" asp-route-CompanyId="@Model.CompanyId" asp-route-CarId="@Model.CarId"/>
+			</div>
+		</form>
+	</div>
 </div>
 
 <div>

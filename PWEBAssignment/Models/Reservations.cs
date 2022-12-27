@@ -28,5 +28,6 @@ namespace PWEBAssignment.Models
         public Deliveries Delivery { get; set; }
         public bool Rejected { get; set; }
         public bool ConfirmReturn { get; set; }
-    }
+        public Double Price { get; set; }
+	}
 }

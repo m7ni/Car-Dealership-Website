@@ -25,7 +25,6 @@
                 Situation of Reservation
             </th>
             <th>
-                Return of the Car
             </th>
             <th>
                 Details
@@ -43,18 +42,10 @@
                 @Html.DisplayFor(modelItem => item.Car.Model)
             </td>
             <td>
-                @if (true)
-                {
-                    var newDate = item.DeliveryDate.ToString("dd/MM/yyyy");
-                }
-                    @Html.DisplayFor(modelItem => item.DeliveryDate) 
+                    @item.DeliveryDate.ToString("dd/MM/yyyy")
             </td>
             <td>
-                @if(true)
-                {
-                    var newDate = item.ReturnDate.ToString("dd/MM/yyyy");
-                }
-                    @Html.DisplayFor(modelItem => item.ReturnDate) 
+					@item.ReturnDate.ToString("dd/MM/yyyy")
             </td>
             @if(item.DeliveryId == null) 
             {
@@ -69,7 +60,7 @@
                         <a asp-action="Return" asp-route-id="@item.Id">Return</a>
                     </td>
                 }
-                else if(item.DeliveryId != null && item.ReturnId != null)
+                else if(item.DeliveryId != null )
                 {
                     <td>Already Returned</td>
                 }
