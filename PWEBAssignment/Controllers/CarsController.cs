@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -47,7 +49,7 @@ namespace PWEBAssignment.Controllers
             if (User.IsInRole("Employee") || User.IsInRole("Manager"))
             {
                 var user =await _userManager.GetUserAsync(User);
-                var carsUser = await _context.Car.Include("Category").Where(c=> c.CompanyID == user.CompanyID).ToListAsync();
+                var carsUser = await _context.Car.Include("Category").Include("Company").Where(c=> c.CompanyID == user.CompanyID).ToListAsync();
                 listCar = carsUser;
                 
                 if (order == Orders.PriceLow2High)
@@ -63,12 +65,12 @@ namespace PWEBAssignment.Controllers
                 if (order == Orders.Available)
                 {
                     ViewData["Title"] = "Available Cars";
-                    return View(await _context.Car.Include("Category").Where(c => c.Available == true).ToListAsync());
+                    return View(await _context.Car.Include("Category").Include("Company").Where(c => c.Available == true).ToListAsync());
                 }
                 if (order == Orders.NotAvailable)
                 {
                     ViewData["Title"] = "Not Available Cars";
-                    return View(await _context.Car.Include("Category").Where(c => c.Available == false).ToListAsync());
+                    return View(await _context.Car.Include("Category").Include("Company").Where(c => c.Available == false).ToListAsync());
                 }
 
                 return View(listCar);
@@ -154,8 +156,9 @@ namespace PWEBAssignment.Controllers
             
         }
 
-        // GET: Cars/Create
-        public async Task<IActionResult> Create()
+		// GET: Cars/Create
+		[Authorize(Roles = "Admin,Employee,Manager")]
+		public async Task<IActionResult> Create()
         {
             if (User.IsInRole("Employee") || User.IsInRole("Manager"))
             {
@@ -171,10 +174,11 @@ namespace PWEBAssignment.Controllers
             return View();
         }
 
-        // POST: Cars/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+		// POST: Cars/Create
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[Authorize(Roles = "Admin,Employee,Manager")]
+		[HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Model,LicencePlate,Damage,Available,CategoryID,CompanyID")] Car car)
         {
@@ -186,6 +190,8 @@ namespace PWEBAssignment.Controllers
                 return RedirectToAction(nameof(Create));
             if (ModelState.IsValid)
             {
+	            var company = await _context.Company.FindAsync(car.CategoryID);
+	            car.Company = company;
                 _context.Add(car);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -193,8 +199,10 @@ namespace PWEBAssignment.Controllers
             return RedirectToAction(nameof(Create));
         }
 
-        // GET: Cars/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+		// GET: Cars/Edit/5
+
+		[Authorize(Roles = "Admin,Employee,Manager")]
+		public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Car == null)
             {
@@ -236,8 +244,8 @@ namespace PWEBAssignment.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //[Authorize(Roles = "Employe")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Model,LicencePlate,Damage,Available,CategoryID,CompanyID")] Car car)
+        [Authorize(Roles = "Admin,Employee,Manager")]
+		public async Task<IActionResult> Edit(int id, [Bind("Id,Model,LicencePlate,Damage,Available,CategoryID,CompanyID")] Car car)
         {
             if (id != car.Id)
             {
@@ -273,8 +281,9 @@ namespace PWEBAssignment.Controllers
             return View(car);
         }
 
-        // GET: Cars/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+		// GET: Cars/Delete/5
+		[Authorize(Roles = "Admin,Employee,Manager")]
+		public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Car == null)
             {
@@ -302,8 +311,8 @@ namespace PWEBAssignment.Controllers
         // POST: Cars/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        //[Authorize(Roles = "Employe")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+		[Authorize(Roles = "Admin,Employee,Manager")]
+		public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Car == null)
             {
@@ -323,11 +332,11 @@ namespace PWEBAssignment.Controllers
         {
           return (_context.Car?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-        
-        
 
-        
-        /*
+
+
+
+		/*
         public async Task<IActionResult> Reservation(int? id)
         {
             if (id == null || _context.Car == null)
@@ -344,8 +353,10 @@ namespace PWEBAssignment.Controllers
             //return View(Reservations);
             return RedirectToAction("Index");
         }*/
-    
-        public async Task<IActionResult> ActivateCar(int id)
+
+
+		[Authorize(Roles = "Admin,Employee,Manager")]
+		public async Task<IActionResult> ActivateCar(int id)
         {
             var car = await _context.Car.Where(c => c.Id == id).FirstOrDefaultAsync();
 

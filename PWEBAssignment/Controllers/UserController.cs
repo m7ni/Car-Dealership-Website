@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PWEBAssignment.Data;
 using PWEBAssignment.Models;
 using PWEBAssignment.ViewModels;
+using System.Data;
 
 namespace PWEBAssignment.Controllers
 {
-    public class UserController : Controller
+	[Authorize(Roles = "Admin")]
+	public class UserController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;

@@ -13,7 +13,6 @@ namespace PWEBAssignment.ViewModels
 		[Display(Name = "Vehicle Damage", Description = "The vehicle has been returned with damage (Y/N)", Prompt = "Specify if the vehicle has any damage")]
 		public bool VehicleDamage { get; set; }
 
-
 		[Display(Name = "Observation", Description = "Employe observations", Prompt = "Insert your observations")]
 		public string Observations { get; set; }
 
