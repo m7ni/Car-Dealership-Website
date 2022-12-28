@@ -9,7 +9,6 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <link rel="stylesheet" href="css/style.css">
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -17,69 +16,61 @@
 
 </head>
 <body>
-    <header>
+<header class="mb-0">
+	<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+		<div class="container">
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav me-auto">
+					<li class="nav-item">
+						<a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" asp-area="" asp-controller="Cars" asp-action="Index">Cars</a>
+					</li>
+					@if (User.IsInRole("Client"))
+					{
+						<li class="nav-item">
+							<a class="nav-link" asp-area="" asp-controller="Reservations" asp-action="Index">My Reservations</a>
+						</li>
+					}
+					@if (User.IsInRole("Admin"))
+					{
+						<li class="nav-item">
+							<a class="nav-link" asp-area="" asp-controller="Companies" asp-action="Index">Companies</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" asp-area="" asp-controller="User" asp-action="Index">Users</a>
+						</li>
+					}
+					@if (User.IsInRole("Manager"))
+					{
+						<li class="nav-item">
+							<a class="nav-link" asp-area="" asp-controller="UserManager" asp-action="Index">Users</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" asp-area="" asp-controller="ReservationCompanySide" asp-action="Index">Company´s Reservations</a>
+						</li>
+					}
+					@if (User.IsInRole("Employee"))
+					{
+						<li class="nav-item">
+							<a class="nav-link" asp-area="" asp-controller="ReservationCompanySide" asp-action="Index">Company´s Reservations</a>
+						</li>
+					}
+				</ul>
+				<partial name="_LoginPartial"/>
+			</div>
+		</div>
+	</nav>
 
-        <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-            <div class="container">
-
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="fa fa-bars"></span> Menu
-                </button>
-                
-                <div class="collapse navbar-collapse" id="ftco-nav">
-                    <ul class="navbar-nav mr-auto">
-	                    <li class="nav-item">
-		                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-	                    </li>
-	                    <li class="nav-item">
-		                    <a class="nav-link" asp-area="" asp-controller="Cars" asp-action="Index">Cars</a>
-	                    </li>  
-	                    @if (User.IsInRole("Client"))
-                        {
-	                        <li class="nav-item">
-		                        <a class="nav-link" asp-area="" asp-controller="Reservations" asp-action="Index">My Reservations</a>
-	                        </li>  
-                        }
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Companies" asp-action="Index">Companies</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="User" asp-action="Index">Users</a>
-                            </li>
-                        }
-                        @if (User.IsInRole("Manager"))
-                        {
-	                        <li class="nav-item">
-		                        <a class="nav-link" asp-area="" asp-controller="UserManager" asp-action="Index">Users</a>
-	                        </li>
-	                        <li class="nav-item">
-		                        <a class="nav-link" asp-area="" asp-controller="ReservationCompanySide" asp-action="Index">Company´s Reservations</a>
-	                        </li>
-                        }
-                        @if (User.IsInRole("Employee"))
-                        {
-	                        <li class="nav-item">
-		                        <a class="nav-link" asp-area="" asp-controller="ReservationCompanySide" asp-action="Index">Company´s Reservations</a>
-	                        </li>
-                        }
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
-            </div>
-        </nav>
-
-
-       
-    </header>
+</header>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+	<footer class="border-bottom mt-auto footer text-muted ">
         <div class="container">
             &copy; 2022 - PWEBAssignment - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>

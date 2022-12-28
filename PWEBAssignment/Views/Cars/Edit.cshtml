@@ -34,11 +34,6 @@
 	            <select asp-for="CategoryID" class="form-control" asp-items="ViewBag.Category"></select>
 	            <span asp-validation-for="CategoryID" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Available" /> @Html.DisplayNameFor(model => model.Available)
-                </label>
-            </div>
             <div class="form-group">
                 <label asp-for="CompanyID" class="control-label"></label>
                 <select asp-for="CompanyID" class="form-control" asp-items="ViewBag.CompanyID"></select>

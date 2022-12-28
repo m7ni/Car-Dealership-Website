@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h1>User Roles</h1>
+<h1>Accouts</h1>
 
 <table class="table table-striped">
     <thead>
@@ -14,23 +14,15 @@
         <th>Last Name</th>
         <th>Email</th>
         <th>Roles</th>
-        <th>Action</th>
-        <th>Availability</th>
+	    <th>Status</th>
 
     </tr>
     </thead>
     <tbody>
     @foreach (var userRoles in Model)
     {
-        
 	    <tr >
-            <td>
-              @*  @if (userRoles.Avatar?.Length > 0)
-                {
-                    <img id="MyAvatar" style="max-width: 100px; max-height: 100px"
-                     src="data:image/*;base64,@(Convert.ToBase64String(userRoles.Avatar))" />
-                }*@
-            </td>
+            
             <td>@userRoles.FirstName</td>
             <td>@userRoles.LastName</td>
             <td>@userRoles.UserName</td>

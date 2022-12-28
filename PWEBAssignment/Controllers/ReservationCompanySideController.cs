@@ -151,8 +151,9 @@ namespace PWEBAssignment.Controllers
 		        returns.ReservationId = reservations.Id;
 		        returns.Reservation = reservations;
 
-					_context.Add(returns);
+				_context.Add(returns);
 		        await _context.SaveChangesAsync();
+
 				var car = await _context.Car.FindAsync(reservations.CarId);
 				car.Available = true;
 				reservations.ReturnId = returns.Id;
@@ -227,7 +228,7 @@ namespace PWEBAssignment.Controllers
             }
             var coursePath = Path.Combine(
 	            Directory.GetCurrentDirectory(),
-	            Path.Combine(_returnsPath, id.GetValueOrDefault().ToString())
+	            Path.Combine(_returnsPath, reservations.ReturnId.GetValueOrDefault().ToString())
             );
 
             var files = new List<string>();
@@ -235,7 +236,7 @@ namespace PWEBAssignment.Controllers
             if (Directory.Exists(coursePath))
 	            files = (
 		            from file in Directory.EnumerateFiles(coursePath)
-		            select Path.Combine(_returnsPath[7..], $"{id}/{Path.GetFileName(file)}")
+		            select Path.Combine(_returnsPath[7..], $"{reservations.ReturnId}/{Path.GetFileName(file)}")
 	            ).ToList();
 
             ViewData["Files"] = files;
@@ -349,8 +350,7 @@ namespace PWEBAssignment.Controllers
           return (_context.Reservations?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+      
         public async Task<IActionResult> Reject(int id)
         {
             if (_context.Reservations == null)
@@ -358,8 +358,11 @@ namespace PWEBAssignment.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Reservations'  is null.");
             }
             var reservations = await _context.Reservations.FindAsync(id);
-            if (reservations != null)
+            var car = await _context.Car.FindAsync(reservations.CarId);
+
+            if (reservations != null && car!=null)
             {
+                car.Available = true;
                 reservations.Rejected = true;
             }
 

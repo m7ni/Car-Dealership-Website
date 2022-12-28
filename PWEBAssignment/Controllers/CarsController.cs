@@ -257,6 +257,7 @@ namespace PWEBAssignment.Controllers
 
             ModelState.Remove(nameof(car.Category));
             ModelState.Remove(nameof(car.Company));
+            ModelState.Remove(nameof(car.Available));
             if (ModelState.IsValid)
             {
                 try

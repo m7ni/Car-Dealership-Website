@@ -17,37 +17,19 @@
 				<label asp-for="NumberOfKm" class="control-label"></label>
 				<input asp-for="NumberOfKm" class="form-control" />
 				<span asp-validation-for="NumberOfKm" class="text-danger"></span>
-			</div>
-	     
+			</div
 			<div class="form-group form-check">
 				<label class="form-check-label">
 					<input class="form-check-input" asp-for="VehicleDamage" /> @Html.DisplayNameFor(model => model.VehicleDamage)
 				</label>
 			</div>
-		
-		
 			<div class="col-md-8">
 				<p>Adicionar imagens</p>
 				<div class="form-group">
-					<input type="file" name="ficheiros" id="ficheiros" multiple
+					<input type="file" name="files" id="files" multiple
 					       accept=".png,.jpg,.jpeg,image/png,image/jpeg"
 					       class="form-control" />
 				</div>
-				<p>Galeria de imagens</p>
-				@*<div class="row d-flex">
-					@foreach (var file in ViewBag.Files)
-					{
-						<div class="col p-2 m-2" style="border-radius:10px; border:1px dotted #ccc;" >
-							@*<a asp-action="DeleteImage"
-							   asp-route-id="@Model.Id" asp-route-image="@file">
-								<svg bootstrap-icon="XCircleFill" onclick="return confirm('Tem a certeza que deseja apagar esta imagem?')"
-								     class="text-danger" width="24" height="24"
-								     aria-label="Trash"></svg>
-							</a>
-							<img src="@file" class="img-thumbnail" style="max-width:150px; max-height:150px;" />
-						</div>
-					}
-				</div>*@
 			</div>
 			
 			<div class="form-group">

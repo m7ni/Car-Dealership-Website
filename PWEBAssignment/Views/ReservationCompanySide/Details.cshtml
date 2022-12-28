@@ -135,15 +135,15 @@
 			<div class="row d-flex">
 				@foreach (var file in ViewBag.Files)
 				{
-					<div class="col p-2 m-2" style="border-radius:10px; border:1px dotted #ccc;" >
-						<a asp-action="DeleteImage"
+					<div class="col p-2 m-2" style="border-radius: 10px; border: 1px dotted #ccc;">
+						@*<a asp-action="DeleteImage"
 						   asp-route-id="@Model.Id" asp-route-image="@file">
 							<svg bootstrap-icon="XCircleFill" onclick="return confirm('Tem a certeza que deseja apagar esta imagem?')"
 							     class="text-danger" width="24" height="24"
 							     aria-label="Trash"></svg>
-						</a>
-						<img src="@file" class="img-thumbnail" style="max-width:150px; max-height:150px;" />
-                        
+						</a>*@
+						<img src="@file" class="img-thumbnail" style="max-width: 150px; max-height: 150px;"/>
+
 					</div>
 				}
 			</div>

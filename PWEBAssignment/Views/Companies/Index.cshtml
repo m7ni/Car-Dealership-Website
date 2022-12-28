@@ -7,7 +7,7 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-primary" asp-action="Create">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -24,7 +24,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Available)
             </th>
-            <th></th>
+	        <th></th>
+	        <th></th>
+	        <th></th>
         </tr>
     </thead>
     <tbody>
@@ -57,10 +59,15 @@
 			           asp-route-id="@item.Id">Activate</a>
 			        <p class="text-danger">It is Deactivated</p>
 		        }
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+		        <td>
+                    <a class="btn btn-primary w-90" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+
+                </td>
+		        <td>
+			        <a class="btn btn-primary w-90" asp-action="Details" asp-route-id="@item.Id">Details</a> 
+		        </td>
+		        <td>
+                    <a class="btn btn-danger w-90" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
 	        </td>
         </tr>

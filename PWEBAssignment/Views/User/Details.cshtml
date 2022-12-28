@@ -7,12 +7,8 @@
     <div class="card">
 	    <div class="card-header">
 		    <h2>Manage User</h2>
-		    @*   @if (ViewBag.Avatar?.Length > 0)
-            {
-                <img id="MyAvatar" style="max-width: 100px; max-height: 100px"
-                 src="data:image/*;base64,@(Convert.ToBase64String(ViewBag.Avatar))" />
-            }*@
-		    <span class="badge bg-dark text-white">@ViewBag.UserName</span> Add / Remove Roles
+		  
+		    <span class="badge bg-dark text-white">@ViewBag.UserName</span>
 	    </div>
 	    <div class="card-body">
             @for (int i = 0; i < Model.Count; i++)
@@ -28,9 +24,8 @@
             }
             <div asp-validation-summary="All" class="text-danger"></div>
         </div>
-        <div class="card-footer">
-            <input type="submit" value="Update" class="btn btn-primary"
-                   style="width:auto" />
+        <div >
+            <input type="submit" value="Update" class="btn btn-primary"style="width:auto" />
             <a asp-action="Index"
                class="btn btn-primary" style="width:auto">Cancel</a>
         </div>

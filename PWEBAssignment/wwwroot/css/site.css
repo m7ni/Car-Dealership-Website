@@ -39,3 +39,56 @@
     background-repeat: no-repeat;
     background-position: 50% 50%;
 }
+
+
+textarea {
+    outline: none;
+    resize: none;
+}
+
+form div {
+    margin-bottom: 2%
+
+}
+.btn-primary {
+    background-color: #129187;
+    border-color: #129187;
+}
+.btn-primary:hover {
+    background-color: #2bab9c;
+    border-color: #2bab9c;
+}
+form div input.btn {
+    margin-top: 2%;
+    background-color: #129187;
+}
+
+a {
+    color: #129187; 
+    text-decoration: none;
+    text-transform: uppercase;
+}
+a:hover {
+    color: #2bab9c;
+}
+
+.card-body a {
+    margin: 1%
+}
+.card-body p {
+    font-weight: 500
+}
+form label {
+    font-weight: 500
+}
+
+.selection {
+    border-radius:5px;
+
+}
+.reject {
+    color: red;
+}
+.reject:hover {
+    color: darkred;
+}

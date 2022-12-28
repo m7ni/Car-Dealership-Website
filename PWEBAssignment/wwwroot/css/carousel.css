@@ -4,10 +4,18 @@
 
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
+body {
+    padding: 0;
+    margin: 0;
+}
+
 
 /* Carousel base class */
 .carousel {
-    margin-bottom: 4rem;
+    margin-bottom: 5rem;
+}
+#carouselDestaques {
+    
 }
 /* Since positioning the image, we need to help out the caption */
 .carousel-caption {
@@ -20,13 +28,13 @@
     height: 32rem;
 }
 
-    .carousel-item > img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        min-width: 100%;
-        height: 32rem;
-    }
+.carousel-item > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    height: 32rem;
+}
 
 
 /* MARKETING CONTENT

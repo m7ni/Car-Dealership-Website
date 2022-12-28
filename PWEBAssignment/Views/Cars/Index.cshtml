@@ -1,27 +1,29 @@
 ﻿@model IEnumerable<PWEBAssignment.Models.Car>
 
+<div class="d-flex flex-grow-1 w-100 justify-content-between">
+	<h1>
+		Cars 
+	</h1>
 
-<h1>
-    Cars
-</h1>
-
-<h1>
+	@if (User.IsInRole("Employee") || User.IsInRole("Manager") || User.IsInRole("Admin"))
+	{
+		<p>
+		    <a class="btn btn-primary w-100" asp-action="Create">Create New</a>
+		</p>
+	}
+</div>
+<h5>
     @ViewData["Title"]
-</h1>
+</h5>
 
-@if (User.IsInRole("Employee") || User.IsInRole("Manager") || User.IsInRole("Admin"))
-{
-    <p>
-        <a class="btn btn-primary" asp-action="Create">Create New</a>
-    </p>
-}
+
 
 <div class="row">
     <div class="col-10">
         <h4>Filters:</h4>
         <form method="post">
             <label for="fname" class="control-label">Car´s Category</label>
-            <select name="CategoryID" asp-items="ViewBag.ListOfCategorys">
+            <select  class="selection"name="CategoryID" asp-items="ViewBag.ListOfCategorys">
                 <option value="">Select Option</option>
             </select>
             @if (User.IsInRole("Client") || User.IsInRole("Admin") || !User.Identity.IsAuthenticated) {
@@ -36,12 +38,12 @@
             </select>
             }
             
-            <input type="submit" value="Search"/>
+            <input class="btn btn-primary" type="submit" value="Search"/>
                 
         </form>
     </div>
     <div class="col-10">
-        <h4>Order By:</h4>
+        <h4>Order By: </h4>
         <a asp-action="Index" asp-route-order="">All</a> |
         <a asp-action="Index" asp-route-order="PriceLow2High">Price: Low to High</a> |
         <a asp-action="Index" asp-route-order="PriceHigh2Low">Price: High to Low</a> |
@@ -49,12 +51,12 @@
         {
             <a asp-action="Index" asp-route-order="RatingLow2High">Rating: Low to High</a>
         }
-        |
+        
         @if (User.IsInRole("Client") || User.IsInRole("Admin") || !User.Identity.IsAuthenticated)
         {
             <a asp-action="Index" asp-route-order="RatingHigh2Low">Rating: High to Low</a>
         }
-        |
+        
         @if(User.IsInRole("Manager") || User.IsInRole("Employee") || User.IsInRole("Admin")) 
         {
             <a asp-action="Index" asp-route-order="Available">Available Vehicles</a>
@@ -93,9 +95,10 @@
                     }
                     @if (User.IsInRole("Manager") || User.IsInRole("Employee") || User.IsInRole("Admin"))
                     {
+                      
                         @if (@car.Available)
                         {
-                            <a class="btn btn-primary"
+                            <a class="btn btn-primary btn-lg w-100"
                                 asp-controller="Cars"
                                 asp-action="ActivateCar"
                                asp-route-id="@car.Id">Make Unavailable</a>
@@ -103,15 +106,17 @@
                         }
                         else
                         {
-                            <a class="btn btn-primary"
+                            <a class="btn btn-primary btn-lg w-100"
                                asp-controller="Cars"
                                 asp-action="ActivateCar"
                                 asp-route-id="@car.Id"> Make Available</a>
                             
                         }
-                        <a asp-action="Delete" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-danger">Delete</a>
-                        <br>
-                        <a asp-action="Edit" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-success">Edit</a>
+
+                        
+                        
+	                    <a asp-action="Edit" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-primary">Edit</a>
+	                    <a asp-action="Delete" asp-route-id="@car.Id" class="w-100 btn btn-lg btn-danger">Delete</a>
                         
                     }
                    

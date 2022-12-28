@@ -120,8 +120,8 @@ namespace PWEBAssignment.Controllers
                 reservations.Id = 0;
                 reservations.Rejected = false;
                 reservations.ConfirmReturn = false;
-                reservations.Price = (reservations.ReturnDate - reservations.DeliveryDate).TotalHours *
-                                     reservations.Car.Category.PriceHour;
+                var category = await _context.Category.FirstOrDefaultAsync(c => c.Id == reservations.Car.CategoryID);
+				reservations.Price = (reservations.ReturnDate - reservations.DeliveryDate).TotalHours * category.PriceHour;
                 _context.Add(reservations);
                 await _context.SaveChangesAsync();
                 _context.Update(car);

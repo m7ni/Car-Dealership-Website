@@ -44,30 +44,46 @@
             <td>
                     @item.DeliveryDate.ToString("dd/MM/yyyy")
             </td>
-            <td>
-					@item.ReturnDate.ToString("dd/MM/yyyy")
-            </td>
-            @if(item.DeliveryId == null) 
+	        <td>
+		        @item.ReturnDate.ToString("dd/MM/yyyy")
+	        </td>
+            @if (item.Rejected)
             {
-                <td> Pending</td>
-            } else {
-                <td>Confirmed</td> 
+	            <td> Not approved</td>
+
+                    <td>   </td>
+		            <td> Rejected by the Company</td>
+	           
+                
             }
-            <td>   
-                @if(item.DeliveryId != null && !item.ConfirmReturn ) 
-                {
-                    <td>
-                        <a asp-action="Return" asp-route-id="@item.Id">Return</a>
-                    </td>
-                }
-                else if(item.DeliveryId != null )
-                {
-                    <td>Already Returned</td>
-                }
-            </td>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-            </td>
+            else
+            {
+	            @if(item.DeliveryId == null) 
+	            {
+		            <td> Pending</td>
+		            <td>   </td>
+	            } else {
+		            <td>Confirmed</td> 
+	            }
+           
+          
+	            <td>   
+		            @if(item.DeliveryId != null && !item.ConfirmReturn ) 
+		            {
+			            <td>
+				            <a asp-action="Return" asp-route-id="@item.Id">Return</a>
+			            </td>
+		            }
+		            else if(item.DeliveryId != null )
+		            {
+			            <td>Already Returned</td>
+		            }
+	            </td>
+            }
+	            <td>
+		            <a asp-action="Details" asp-route-id="@item.Id">More</a>
+	            </td>
+          
         </tr>
 }
     </tbody>
