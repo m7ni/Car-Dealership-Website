@@ -16,8 +16,11 @@ namespace PWEBAssignment.Models
         [Display(Name = "Vehicle Damage", Description = "The vehicle is going to be delivered with damage (Y/N)", Prompt = "Specify if the vehicle has any damage")]
         public bool VehicleDamage { get; set; }
 
-        [Display(Name = "Observation", Description = "Employee observations", Prompt = "Insert your observations")]
+        [DataType(DataType.Text)]
+		[Display(Name = "Observation", Description = "Employee observations", Prompt = "Insert your observations")]
         public string Observations { get; set; }
+
+
         public int? EmployeUserId { get; set; }
         public ApplicationUser EmployeUser { get; set; }
         public int ReservationId { get; set; }

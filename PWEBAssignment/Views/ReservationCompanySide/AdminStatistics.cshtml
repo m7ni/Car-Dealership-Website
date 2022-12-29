@@ -1,0 +1,81 @@
+﻿@model PWEBAssignment.Models.StatisticsViewModel
+
+@{
+	ViewData["Title"] = "Admin´s Performance";
+}
+<h1 class="mb-5">
+	Statistics 
+</h1>
+
+
+<div class=" d-flex flex-column mt-2 align-items-center">
+	<h3 >Reservations per day on the last thirty days</h3>
+	<canvas id="chartDailyReservations"></canvas>
+	<h3 class="mt-5" >Reservations per month on the last twelve Months</h3>
+    <canvas id="chartMonthlyReservations"></canvas>
+</div>
+@section Scripts {
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script>
+        $.ajax({
+            type: "POST",
+            url: "/ReservationCompanySide/GetDailyReservations",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                let Labels = data[0];
+                let Datasets1 = data[1];
+                let dataT = {
+                    labels: Labels,
+                    datasets: [{
+                        label: "Reservations",
+                        data: Datasets1,
+                        fill: false,
+                        borderWidth: 1,
+                    }]
+                };
+				let ctx = $("#chartDailyReservations").get(0).getContext("2d");
+                let myNewChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: dataT,
+                    options: {
+                        responsive: true,
+                        title: { display: true, text: 'Reservation per day ' },
+                        legend: { position: 'bottom' },
+                    }
+                });
+            }
+        });
+    </script>
+	<script>
+        $.ajax({
+            type: "POST",
+            url: "/ReservationCompanySide/GetMonthlyReservations",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                let Labels = data[0];
+                let Datasets1 = data[1];
+                let dataT = {
+                    labels: Labels,
+                    datasets: [{
+                        label: "Reservations",
+                        data: Datasets1,
+                        fill: false,
+                        borderWidth: 1,
+                    }]
+                };
+				let ctx = $("#chartMonthlyReservations").get(0).getContext("2d");
+                let myNewChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: dataT,
+                    options: {
+                        responsive: true,
+                        title: { display: true, text: 'Reservation per day ' },
+                        legend: { position: 'bottom' },
+                    }
+                });
+            }
+        });
+    </script>
+}

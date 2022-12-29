@@ -92,3 +92,7 @@ form label {
 .reject:hover {
     color: darkred;
 }
+.card-body:hover {
+    background-color: #f8f8f7
+}
+

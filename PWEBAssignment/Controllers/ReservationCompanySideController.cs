@@ -32,11 +32,116 @@ namespace PWEBAssignment.Controllers
         public async Task<IActionResult> Index()
         {
             var userSelf = await _userManager.GetUserAsync(User);
-            var applicationDbContext = _context.Reservations.Include(r => r.Car)
-                .Include(r => r.Company).Include(r => r.ClientUser).Where(r=> r.CompanyId == userSelf.CompanyID );
+            var applicationDbContext = _context.Reservations
+	            .Include(r => r.Car)
+                .Include(r => r.Company)
+	            .Include(r => r.ClientUser)
+	            .Where(r=> r.CompanyId == userSelf.CompanyID );
             return View(await applicationDbContext.ToListAsync());
         }
 
+
+        public async Task<IActionResult> ManagerStatistics()
+        {
+
+	        var vm = new StatisticsViewModel();
+	        vm.TotalLastSevenDays = new ProfitStat( await Profit(7));
+	        vm.TotalLastThirtyDays = new ProfitStat( await Profit(30));
+	        vm.AverageLastThirtyDays = new ReservationsStat( await AverageReservations(30));
+			return View(vm);
+        }
+		public async Task<IActionResult> AdminStatistics()
+		{
+
+			var vm = new StatisticsViewModel();
+			vm.TotalLastSevenDays = new ProfitStat(await Profit(7));
+			vm.TotalLastThirtyDays = new ProfitStat(await Profit(30));
+			vm.AverageLastThirtyDays = new ReservationsStat(await AverageReservations(30));
+			return View(vm);
+		}
+
+		private async Task<double> AverageReservations(int days)
+        {
+	        var userSelf = await _userManager.GetUserAsync(User);
+			var profit = 0.0;
+	        var reservations = await _context.Reservations
+		        .Where(d => d.ReservationDate.Date >= DateTime.Now.AddDays(-days) && d.CompanyId == userSelf.CompanyID).CountAsync();
+
+			return ((double)reservations / (double)days);
+        }
+
+        private async Task<double>  Profit(int days)
+        {
+	        var userSelf = await _userManager.GetUserAsync(User);
+			var profit = 0.0;
+	        var reservations =  await _context.Reservations
+		        .Where(d => d.ReservationDate.Date >= DateTime.Now.AddDays(-days) && d.CompanyId == userSelf.CompanyID).ToListAsync();
+	        foreach (var r in reservations)
+	        {
+		        profit += r.Price;
+	        }
+
+	        return profit;
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> GetDailyReservations()
+        {
+	        var userSelf = await _userManager.GetUserAsync(User);
+			//dados de exemplo
+			List<object> dados = new List<object>();
+	        DataTable dt = new DataTable();
+	        dt.Columns.Add("Day", System.Type.GetType("System.DateTime"));
+	        dt.Columns.Add("Quantidade", System.Type.GetType("System.Int32"));
+	        
+	        for (int i = 30; i > 0; i--)
+			{
+				DataRow dr = dt.NewRow();
+				var reservations = await _context.Reservations
+			        .Where(d => d.ReservationDate.Date.DayOfYear == DateTime.Now.AddDays(-i).DayOfYear && d.CompanyId == userSelf.CompanyID).CountAsync();
+		        dr["Day"] = DateTime.Now.AddDays(-i).ToString("dd/MM/yyyy");
+		        dr["Quantidade"] = reservations;
+                dt.Rows.Add(dr);
+			}
+
+	        foreach (DataColumn dc in dt.Columns)
+	        {
+		        List<object> x = new List<object>();
+		        x = (from DataRow drr in dt.Rows select drr[dc.ColumnName]).ToList();
+		        dados.Add(x);
+	        }
+	        return Json(dados);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetMonthlyReservations()
+        {
+            var userSelf = await _userManager.GetUserAsync(User);
+            //dados de exemplo
+            List<object> dados = new List<object>();
+            DataTable dt = new DataTable();
+            dt.Columns.Add("Month", System.Type.GetType("System.DateTime"));
+            dt.Columns.Add("Quantidade", System.Type.GetType("System.Int32"));
+
+            for (int i = 12; i > 0; i--)
+            {
+                DataRow dr = dt.NewRow();
+                var reservations = await _context.Reservations
+                    .Where(d => d.ReservationDate.Date.Month == DateTime.Now.AddMonths(-i).Month).CountAsync();
+                dr["Month"] = DateTime.Now.AddMonths(-i).ToString("dd/MM/yyyy");
+                dr["Quantidade"] = reservations;
+                dt.Rows.Add(dr);
+            }
+
+            foreach (DataColumn dc in dt.Columns)
+            {
+                List<object> x = new List<object>();
+                x = (from DataRow drr in dt.Rows select drr[dc.ColumnName]).ToList();
+                dados.Add(x);
+            }
+            return Json(dados);
+        }
         public async Task<IActionResult> Deliver(int id)
         {
             if (_context.Reservations == null)

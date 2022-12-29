@@ -4,7 +4,9 @@ namespace PWEBAssignment.Models
 {
 	public class ApplicationUser : IdentityUser
 	{
+		[PersonalData]
 		public String firstName { get; set; }
+		[PersonalData]
 		public String lastName { get; set; }
         public bool available { get; set; }
 

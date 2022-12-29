@@ -1,0 +1,102 @@
+﻿@model PWEBAssignment.Models.StatisticsViewModel
+
+@{
+	ViewData["Title"] = "Company´s Performance";
+}
+<h1 class="mb-5">
+	Statistics 
+</h1>
+
+<div class="d-flex justify-content-between"> 
+	<div class="col-xl-3 col-md-6 mb-4">
+		<div class="card border-left-warning shadow h-100 py-2">
+			<div class="card-body">
+				<div class="row no-gutters align-items-center">
+					<div class="col mr-2">
+						<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+							Income of the last seven days
+						</div>
+						<div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalLastSevenDays.Profit</div>
+					</div>
+					<div class="col-auto">
+						<i class="fas fa-vials fa-2x text-gray-300"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-xl-3 col-md-6 mb-4">
+		<div class="card border-left-warning shadow h-100 py-2">
+			<div class="card-body">
+				<div class="row no-gutters align-items-center">
+					<div class="col mr-2">
+						<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+							Income of the last thirty days
+						</div>
+						<div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalLastThirtyDays.Profit</div>
+					</div>
+					<div class="col-auto">
+						<i class="fas fa-vials fa-2x text-gray-300"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-xl-3 col-md-6 mb-4">
+		<div class="card border-left-warning shadow h-100 py-2">
+			<div class="card-body">
+				<div class="row no-gutters align-items-center">
+					<div class="col mr-2">
+						<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+							Average reservations per day on the last thirty days 
+						</div>
+						<div class="h5 mb-0 font-weight-bold text-gray-800">@Model.AverageLastThirtyDays.Reservations</div>
+					</div>
+					<div class="col-auto">
+						<i class="fas fa-vials fa-2x text-gray-300"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class=" d-flex flex-column mt-2 justify-content-center ">
+	<h3 >Reservations per day on the last thirty days</h3>
+	<canvas id="chartDailyReservations"></canvas>
+</div>
+@section Scripts {
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script>
+        $.ajax({
+            type: "POST",
+            url: "/ReservationCompanySide/GetDailyReservations",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                let Labels = data[0];
+                let Datasets1 = data[1];
+                let dataT = {
+                    labels: Labels,
+                    datasets: [{
+                        label: "Reservations",
+                        data: Datasets1,
+                        fill: false,
+                        borderWidth: 1,
+                    }]
+                };
+				let ctx = $("#chartDailyReservations").get(0).getContext("2d");
+                let myNewChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: dataT,
+                    options: {
+                        responsive: true,
+                        title: { display: true, text: 'Reservation per day ' },
+                        legend: { position: 'bottom' },
+                    }
+                });
+            }
+        });
+    </script>
+}

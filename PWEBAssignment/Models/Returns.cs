@@ -16,8 +16,8 @@ namespace PWEBAssignment.Models
 
         public byte[]? PhotoEvidence { get; set; }
 
-        [Display(Name = "Observation", Description = "Employe observations", Prompt = "Insert your observations")]
-
+        [DataType(DataType.Text)]
+		[Display(Name = "Observation", Description = "Employe observations", Prompt = "Insert your observations")]
         public string Observations { get; set; }
 
         public int? EmployeUserId { get; set; }

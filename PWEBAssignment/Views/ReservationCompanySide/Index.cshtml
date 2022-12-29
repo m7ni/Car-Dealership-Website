@@ -4,17 +4,23 @@
     ViewData["Title"] = "Company´s Reservations";
 }
 
-<h1>Company´s Reservations</h1>
+<div class="d-flex flex-grow-1 w-100 justify-content-between mb-5 ">
+	<h1>Company´s Reservations</h1>
+	<a class="btn btn-primary mt-3" asp-action="ManagerStatistics">Statistics</a>
+</div>
 
-<table class="table table-striped">
+<table class="table table-striped table-hover">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.ClientUser)
             </th>
 	        <th>
-                @Html.DisplayNameFor(model => model.Car)
-            </th>
+		        @Html.DisplayNameFor(model => model.Car)
+	        </th>
+	        <th>
+		        @Html.DisplayNameFor(model => model.ReservationDate)
+	        </th>
             <th>
                 @Html.DisplayNameFor(model => model.DeliveryDate)
             </th>
@@ -37,7 +43,10 @@
             </td>
 	        <td>
 		        @Html.DisplayFor(modelItem => item.Car.Model)
-		         [@Html.DisplayFor(modelItem => item.Car.LicencePlate)]
+		        [@Html.DisplayFor(modelItem => item.Car.LicencePlate)]
+	        </td>
+	        <td>
+		        @item.ReservationDate.ToString("dd/MM/yyyy")
 	        </td>
             <td>
 	            @item.DeliveryDate.ToString("dd/MM/yyyy")
