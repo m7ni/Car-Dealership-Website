@@ -31,7 +31,8 @@
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "AndroidSdkUpdater",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "show.migrate.to.gradle.popup": "false",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -47,6 +48,8 @@
       <workItem from="1671897974126" duration="8000" />
       <workItem from="1672182919600" duration="1000" />
       <workItem from="1672262076853" duration="2437000" />
+      <workItem from="1672324379194" duration="79000" />
+      <workItem from="1672324465910" duration="73000" />
     </task>
     <servers />
   </component>
