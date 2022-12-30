@@ -14,7 +14,7 @@
 
 	<a class="btn btn-primary"
 	   asp-controller="UserManager"
-	   asp-action="Create" asp-route-type="Employe">Create Employe</a>
+	   asp-action="Create" asp-route-type="Employe">Create Employee</a>
 </div>
 <table class="table table-striped">
 	<thead>
@@ -32,7 +32,6 @@
 	<tbody>
 	@foreach (var userRoles in Model)
 	{
-        
 		<tr >
 			<td>
 				@*  @if (userRoles.Avatar?.Length > 0)
