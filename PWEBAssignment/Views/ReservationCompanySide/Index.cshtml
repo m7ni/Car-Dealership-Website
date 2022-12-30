@@ -32,6 +32,7 @@
             </th>
 	        <th></th>
 	        <th></th>
+	        <th></th>
         </tr>
     </thead>
     <tbody>
@@ -60,33 +61,37 @@
             }
             else if (item.DeliveryId != null && item.ReturnId == null)
             {
-                <td>Confirmed</td>
+	            <td>Confirmed</td>
+	            <td></td>
+	            <td></td>
             }
             else
             {
-                <td>Closed</td>
+	            <td>Closed</td>
+	            <td></td>
+	            <td></td>
             }
 
 
             @if (item.DeliveryId == null && item.Rejected == false)
             {
                 <td>
-	                <a asp-action="Deliver" asp-route-id="@item.Id">Deliver</a>
+                        <a class="btn btn-primary  " asp-action="Deliver" asp-route-id="@item.Id">Deliver</a>
                 </td>  
 	        <td>
-	                <a asp-action="Reject" class="reject" asp-route-id="@item.Id">Reject</a>
+                        <a class="btn btn-danger " asp-action="Reject" class="reject" asp-route-id="@item.Id">Reject</a>
                 </td>
 
             }
 			@if (item.ConfirmReturn == true && item.ReturnId == null)
 			{
 				<td>
-					<a asp-action="ReceiveCar" asp-route-id="@item.Id">Receive car</a>
+                        <a class="btn btn-primary  " asp-action="ReceiveCar" asp-route-id="@item.Id">Receive car</a>
 				</td>
 			}
 	        
             <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a class="btn btn-primary  " asp-action="Details" asp-route-id="@item.Id">Details</a>
             </td>
         </tr>
 }

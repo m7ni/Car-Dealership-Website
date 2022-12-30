@@ -12,14 +12,16 @@
 	<h3 >Reservations per day on the last thirty days</h3>
 	<canvas id="chartDailyReservations"></canvas>
 	<h3 class="mt-5" >Reservations per month on the last twelve Months</h3>
-    <canvas id="chartMonthlyReservations"></canvas>
+	<canvas id="chartMonthlyReservations"></canvas>
+	<h3 class="mt-5" >Clients per month on the last twelve Months</h3>
+    <canvas id="chartMonthlyClients"></canvas>
 </div>
 @section Scripts {
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<script>
         $.ajax({
             type: "POST",
-            url: "/ReservationCompanySide/GetDailyReservations",
+            url: "/ReservationCompanySide/GetDailyReservationsAdmin",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (data) {
@@ -71,7 +73,38 @@
                     data: dataT,
                     options: {
                         responsive: true,
-                        title: { display: true, text: 'Reservation per day ' },
+                        title: { display: true, text: 'Reservation per Month ' },
+                        legend: { position: 'bottom' },
+                    }
+                });
+            }
+        });
+    </script>
+	<script>
+        $.ajax({
+            type: "POST",
+            url: "/ReservationCompanySide/GetMonthlyClients",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                let Labels = data[0];
+                let Datasets1 = data[1];
+                let dataT = {
+                    labels: Labels,
+                    datasets: [{
+                        label: "Clients",
+                        data: Datasets1,
+                        fill: false,
+                        borderWidth: 1,
+                    }]
+                };
+				let ctx = $("#chartMonthlyClients").get(0).getContext("2d");
+                let myNewChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: dataT,
+                    options: {
+                        responsive: true,
+                        title: { display: true, text: 'Clients per Month ' },
                         legend: { position: 'bottom' },
                     }
                 });

@@ -41,6 +41,9 @@
 						<li class="nav-item">
 							<a class="nav-link" asp-area="" asp-controller="User" asp-action="Index">Users</a>
 						</li>
+						<li class="nav-item">
+								<a class="nav-link" asp-area="" asp-controller="ReservationCompanySide" asp-action="AdminStatistics">Statistics</a>
+						</li>
 					}
 					@if (User.IsInRole("Manager"))
 					{

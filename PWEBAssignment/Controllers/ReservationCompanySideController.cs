@@ -86,7 +86,7 @@ namespace PWEBAssignment.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> GetDailyReservations()
+        public async Task<IActionResult> GetDailyReservationsManager()
         {
 	        var userSelf = await _userManager.GetUserAsync(User);
 			//dados de exemplo
@@ -113,7 +113,69 @@ namespace PWEBAssignment.Controllers
 	        }
 	        return Json(dados);
         }
+        [HttpPost]
+        public async Task<IActionResult> GetDailyReservationsAdmin()
+        {
+	        var userSelf = await _userManager.GetUserAsync(User);
+	        //dados de exemplo
+	        List<object> dados = new List<object>();
+	        DataTable dt = new DataTable();
+	        dt.Columns.Add("Day", System.Type.GetType("System.DateTime"));
+	        dt.Columns.Add("Quantidade", System.Type.GetType("System.Int32"));
 
+	        for (int i = 30; i > 0; i--)
+	        {
+		        DataRow dr = dt.NewRow();
+		        var reservations = await _context.Reservations
+			        .Where(d => d.ReservationDate.Date.DayOfYear == DateTime.Now.AddDays(-i).DayOfYear).CountAsync();
+		        dr["Day"] = DateTime.Now.AddDays(-i).ToString("dd/MM/yyyy");
+		        dr["Quantidade"] = reservations;
+		        dt.Rows.Add(dr);
+	        }
+
+	        foreach (DataColumn dc in dt.Columns)
+	        {
+		        List<object> x = new List<object>();
+		        x = (from DataRow drr in dt.Rows select drr[dc.ColumnName]).ToList();
+		        dados.Add(x);
+	        }
+	        return Json(dados);
+        }
+
+		[HttpPost]
+        public async Task<IActionResult> GetMonthlyClients()
+        {
+            var userSelf = await _userManager.GetUserAsync(User);
+            //dados de exemplo
+            List<object> dados = new List<object>();
+            DataTable dt = new DataTable();
+            dt.Columns.Add("Month", System.Type.GetType("System.DateTime"));
+            dt.Columns.Add("Quantidade", System.Type.GetType("System.Int32"));
+
+            for (int i = 12; i > 0; i--)
+            {
+                var count = 0;
+                DataRow dr = dt.NewRow();
+                var user =await _userManager.Users.ToListAsync();
+                foreach (var u in user)
+                {
+                  if(await _userManager.IsInRoleAsync(u,"Client") && u.entryDate.Date.Month == DateTime.Now.AddMonths(-i).Month)
+                     count++;
+                }
+                
+                dr["Month"] = DateTime.Now.AddMonths(-i).ToString("dd/MM/yyyy");
+                dr["Quantidade"] = count;
+                dt.Rows.Add(dr);
+            }
+
+            foreach (DataColumn dc in dt.Columns)
+            {
+                List<object> x = new List<object>();
+                x = (from DataRow drr in dt.Rows select drr[dc.ColumnName]).ToList();
+                dados.Add(x);
+            }
+            return Json(dados);
+        }
         [HttpPost]
         public async Task<IActionResult> GetMonthlyReservations()
         {

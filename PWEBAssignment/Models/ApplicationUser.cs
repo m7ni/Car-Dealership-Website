@@ -10,6 +10,7 @@ namespace PWEBAssignment.Models
 		public String lastName { get; set; }
         public bool available { get; set; }
 
+		public DateTime entryDate { get; set; }
         public int? CompanyID { get; set; }
         public Company Company { get; set; }
     }

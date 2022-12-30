@@ -27,7 +27,7 @@
             <th>
             </th>
             <th>
-                Details
+                Description
             </th>
 	        <th></th>
         </tr>
@@ -71,17 +71,17 @@
 		            @if(item.DeliveryId != null && !item.ConfirmReturn ) 
 		            {
 			            <td>
-				            <a asp-action="Return" asp-route-id="@item.Id">Return</a>
+                            <a class="btn btn-primary  " asp-action="Return" asp-route-id="@item.Id">Return</a>
 			            </td>
 		            }
 		            else if(item.DeliveryId != null )
 		            {
-			            <td>Already Returned</td>
+			            <td>Returned</td>
 		            }
 	            </td>
             }
 	            <td>
-		            <a asp-action="Details" asp-route-id="@item.Id">More</a>
+                    <a class="btn btn-primary  " asp-action="Details" asp-route-id="@item.Id">Details</a>
 	            </td>
           
         </tr>

@@ -129,6 +129,7 @@ namespace PWEBAssignment.Areas.Identity.Pages.Account
                 user.firstName = Input.firstName;
                 user.lastName = Input.lastName;
                 user.available = false;
+                user.entryDate = DateTime.Now;
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
