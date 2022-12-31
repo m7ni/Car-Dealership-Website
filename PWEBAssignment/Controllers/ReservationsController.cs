@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -27,11 +29,40 @@ namespace PWEBAssignment.Controllers
         // GET: Reservations
         public async Task<IActionResult> Index()
         {
+            ViewData["ListOfCategorys"] = new SelectList(_context.Category, "Id", "Name");
+            ViewData["ListOfDeliveryDate"] = new SelectList(_context.Reservations, "DeliveryDate", "DeliveryDate");
+            ViewData["ListOfReturnDate"] = new SelectList(_context.Reservations, "ReturnDate", "ReturnDate");
+            ViewData["ListOfModels"] = new SelectList(_context.Car, "Id", "Model");
+            ViewData["ListOfClients"] = new SelectList(_context.Reservations, "Id", "Client");
+
             var userSelf = await _userManager.GetUserAsync(User);
             var applicationDbContext = _context.Reservations.Include(r => r.Car).Include(r => r.Company).Where(r => r.ClientUser == userSelf);
             return View(await applicationDbContext.ToListAsync());
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(int CategoryID, DateTime DeliveryDate, DateTime ReturnDate, int ModelID, int ClientID)
+        {
+            if (CategoryID > 0 && DeliveryDate != null && ReturnDate != null && ModelID > 0 && ClientID > 0)
+            {
+                var category = await _context.Category.FirstOrDefaultAsync(c => c.Id == CategoryID);
+                var car = await _context.Car.FirstOrDefaultAsync(c => c.Id == ModelID);
+                var reservation = await _context.Reservations.FirstOrDefaultAsync(c => c.Id == ClientID);
+                var user = await _userManager.GetUserAsync(User);
+
+                ViewData["Title"] = "List of Cars with Category: '" + category.Name + "', Model: '" + car.Model + "', Client: '" + reservation.ClientUserId + "', Delivery Date: '" + reservation.DeliveryDate + "', Return Date: '" + reservation.ReturnDate + "'";
+
+                return View(await _context.Reservations.Include("Company")
+                    .Where(c => c.Car.Model == car.Model
+                    && c.Car.Category == car.Category
+                    && c.ClientUserId == ClientID
+                    && c.DeliveryDate == DeliveryDate
+                    && c.ReturnDate == ReturnDate
+                    && c.Company == user.Company ).ToListAsync());
+            }
+            return RedirectToAction("Index");
+        }
 
         public async Task<IActionResult> Return(int id)
         {
