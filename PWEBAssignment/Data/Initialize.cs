@@ -45,33 +45,36 @@ namespace PWEBAssignment.Data
             {
                 var categoria = new Category();
                 categoria.Name = "SUV";
-                categoria.PriceHour = 25;
+                categoria.PriceHour = 30;
                 context.Category.Add(categoria);
                 context.SaveChanges();
 
                 categoria = new Category();
                 categoria.Name = "SPORT";
-                categoria.PriceHour = 35;
+                categoria.PriceHour = 50;
                 context.Category.Add(categoria);
                 await context.SaveChangesAsync();
 
                 categoria = new Category();
                 categoria.Name = "MICRO";
-                categoria.PriceHour = 35;
+                categoria.PriceHour = 20;
                 context.Category.Add(categoria);
                 await context.SaveChangesAsync();
 
 
                 categoria = new Category();
                 categoria.Name = "LUXURY";
-                categoria.PriceHour = 35;
+                categoria.PriceHour = 50;
+                context.Category.Add(categoria);
+                await context.SaveChangesAsync();
+
+                categoria = new Category();
+                categoria.Name = "LIGHT";
+                categoria.PriceHour = 25;
                 context.Category.Add(categoria);
                 await context.SaveChangesAsync();
 
             }
-
-
-           
         }
 	}
 }

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,12 @@ namespace PWEBAssignment.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public CompaniesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        private readonly INotyfService _toastNotification;
+        public CompaniesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, INotyfService toastNotification)
         {
             _context = context;
             _userManager = userManager;
+            _toastNotification = toastNotification;
         }
 
         // GET: Companies
@@ -68,10 +71,17 @@ namespace PWEBAssignment.Controllers
             ModelState.Remove(nameof(company.Workers));
             ModelState.Remove(nameof(company.Cars));
 
-            if (!ModelState.IsValid)
-	            return View(company);
 
-			company.Available = false;
+
+            var equals = await _context.Company.FirstOrDefaultAsync(c =>
+                c.Name.ToUpper().Equals(company.Name.ToUpper()));
+            if (equals != null)
+                ModelState.AddModelError("Name", "A Company with that name already exists");
+
+            if (!ModelState.IsValid)
+                return View(company);
+
+            company.Available = false;
             company.Rating = 0;
             var defaultUser = new ApplicationUser
             {
@@ -86,23 +96,21 @@ namespace PWEBAssignment.Controllers
 
             if (user == null)
             {
-                await _userManager.CreateAsync(defaultUser, FormatString(company.Name));
+                await _userManager.CreateAsync(defaultUser, "CompanyManager.0");
                 await _userManager.AddToRoleAsync(defaultUser,
                     Roles.Manager.ToString());
                 user = await _userManager.FindByEmailAsync(defaultUser.Email);
                 company.Workers = new Collection<ApplicationUser>();
+                company.Cars = new Collection<Car>();
                 company.Workers.Add(user);
             }
 
             _context.Add(company);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-            
-           
-           
         }
 
-		public static string FormatString(string input)
+        public static string FormatString(string input)
 		{
 			input = input.ToLowerInvariant();
 
@@ -211,14 +219,15 @@ namespace PWEBAssignment.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Company'  is null.");
             }
 
-            var teste = await _context.Reservations.Where(r => r.CompanyId == id).FirstOrDefaultAsync();
+            var teste = await _context.Reservations.Where(r => r.CompanyId == id && r.ReturnId==null).FirstOrDefaultAsync();
             if (teste != null)
             {
-                return View();
+                _toastNotification.Error("This company has reservations");
+                return RedirectToAction(nameof(Index));
             }
 
-            var users = await _userManager.Users.Where(u => u.CompanyID == id).ToListAsync();
 
+            var users = await _userManager.Users.Where(u => u.CompanyID == id).ToListAsync();
             foreach (var u in users)
             {
                 await _userManager.DeleteAsync(u);
