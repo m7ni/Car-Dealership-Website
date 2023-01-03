@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,13 +16,15 @@ namespace PWEBAssignment.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
+        private readonly INotyfService _toastNotification;
 
         public UserController(UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
+            RoleManager<IdentityRole> roleManager, ApplicationDbContext context, INotyfService toastNotification)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
+            _toastNotification = toastNotification;
         }
 
         public async Task<IActionResult> Index()
@@ -108,9 +111,14 @@ namespace PWEBAssignment.Controllers
         public async Task<IActionResult> ActivateUser(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
+            var userSelf = await _userManager.GetUserAsync(User);
 
-           if(user==null)
-               return RedirectToAction(nameof(Index));
+            if (user == null || user.Id == userSelf.Id)
+            {
+                _toastNotification.Information("You cannot change the status of yourself", 3);
+                return RedirectToAction(nameof(Index));
+
+            }
 
             if (user.available)
                 user.available = false;

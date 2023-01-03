@@ -16,6 +16,7 @@ namespace PWEBAssignment.Models
 		public string Address { get; set; }
 
         [Display(Name = "Rating", Description = "Company's Rating", Prompt = "Insert the rating of the Company")]
+        [Range(0,5, ErrorMessage = "The Rating needs to be between 0 and 5")]
         public int Rating { get; set; }
 
         [Display(Name = "Available", Description = "Company's Availability")]

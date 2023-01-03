@@ -154,7 +154,7 @@ namespace PWEBAssignment.Controllers
                 reservations.ConfirmReturn = false;
                 reservations.ReservationDate = DateTime.Now;
                 var category = await _context.Category.FirstOrDefaultAsync(c => c.Id == reservations.Car.CategoryID);
-				reservations.Price = (reservations.ReturnDate - reservations.DeliveryDate).TotalHours * category.PriceHour;
+				reservations.Price = ((reservations.ReturnDate - reservations.DeliveryDate).TotalHours * category.PriceHour)/24;
                 _context.Add(reservations);
                 await _context.SaveChangesAsync();
                 _context.Update(car);
