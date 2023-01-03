@@ -149,6 +149,7 @@ namespace PWEBAssignment.Controllers
                 reservations.Car = car;
                 reservations.Company = await _context.Company.FirstOrDefaultAsync(c => c.Id == reservations.CompanyId);
                 reservations.Id = 0;
+                //reservations.ClientUserId = await _context.Users.FirstOrDefaultAsync(c => c.Id == reservations.ClientUserId);
                 reservations.Rejected = false;
                 reservations.ConfirmReturn = false;
                 reservations.ReservationDate = DateTime.Now;

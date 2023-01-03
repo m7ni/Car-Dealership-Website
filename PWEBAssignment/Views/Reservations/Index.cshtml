@@ -6,43 +6,7 @@
 
 <h1>My Reservations</h1>
 
-<div class="row">
-    <div class="col-10">
-        <h4>Filters:</h4>
-        <form method="post">
-            @if (User.IsInRole("Manager") || User.IsInRole("Employee"))
-            {
-                <label for="fname" class="control-label">Car´s Category</label>
-                <select class="selection" name="CategoryID" asp-items="ViewBag.ListOfCategorys">
-                    <option value="">Select Option</option>
-                </select>
-            
-                <label for="fname" class="control-label">Delivery Date</label>
-                <select name="DeliveryDate" asp-items="ViewBag.ListOfDeliveryDate">
-                    <option value="">Select Option</option>
-                </select>
 
-                <label for="fname" class="control-label">Car´s Location</label>
-                <select name="ReturnDate" asp-items="ViewBag.ListOfReturnDate">
-                    <option value="">Select Option</option>
-                </select>
-
-                <label for="fname" class="control-label">Car´s Model</label>
-                <select name="ModelID" asp-items="ViewBag.ListOfModels">
-                    <option value="">Select Option</option>
-                </select>
-
-                <label for="fname" class="control-label">Client</label>
-                <select name="ClientID" asp-items="ViewBag.ListOfClients">
-                    <option value="">Select Option</option>
-                </select>
-            }
-
-            <input class="btn btn-primary" type="submit" value="Search" />
-
-        </form>
-    </div>
-</div>
 
 <table class="table table-hover table-striped ">
     <thead>

@@ -136,20 +136,29 @@ namespace PWEBAssignment.Controllers
                 var listCar = _context.Car;
                 if (CompanyID > 0)
                 {
+                    if (User.IsInRole("Client") || !User.Identity.IsAuthenticated)
+                        return View(await _context.Car.Include("Company")
+                        .Where(c => c.CompanyID == CompanyID && c.Available == true && c.Company.Available == true).ToListAsync());
                     return View(await _context.Car.Include("Company")
-                    .Where(c => c.CompanyID == CompanyID && c.Available == true && c.Company.Available == true).ToListAsync());
+                        .Where(c => c.CompanyID == CompanyID).ToListAsync());
                     //listCar = await listCar.Where(c => c.CompanyID == CompanyID).ToListAsync();       //estar a acrescentar na pes
                 }
                 if (CategoryID > 0)
                 {
-                    return View(await _context.Car.Include("Company")
-                    .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
+                    if(User.IsInRole("Client") || !User.Identity.IsAuthenticated)
+                        return View(await _context.Car.Include("Company")
+                        .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
+                    return View(await _context.Car.Include("Category")
+                        .Where(c => c.CategoryID == CategoryID).ToListAsync());
                     //listCar.Where(c => c.CategoryID == CompanyID);
                 }
                 if (Address != "Select Option")
                 {
+                    if (User.IsInRole("Client") || !User.Identity.IsAuthenticated)
+                        return View(await _context.Car.Include("Company")
+                        .Where(c => c.Company.Address == Address && c.Available == true && c.Company.Available == true).ToListAsync());
                     return View(await _context.Car.Include("Company")
-                    .Where(c => c.Company.Address == Address && c.Available == true && c.Company.Available == true).ToListAsync());
+                       .Where(c => c.Company.Address == Address).ToListAsync());
                 }
                 return View(await listCar.ToListAsync());
             
