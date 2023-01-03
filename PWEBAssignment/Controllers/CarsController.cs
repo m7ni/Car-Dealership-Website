@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PWEBAssignment.Data;
 using PWEBAssignment.Models;
 using System.Data;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 
 namespace PWEBAssignment.Controllers
@@ -123,6 +125,8 @@ namespace PWEBAssignment.Controllers
                 ViewData["ListOfCompanys"] = new SelectList(_context.Company.ToList(), "Id", "Name");
                 ViewData["ListOfAddresses"] = new SelectList(_context.Company.ToList(), "Address", "Address");
 
+                
+                
                 return View(await _context.Car.Include("Company")
                     .Where(c => c.CompanyID == CompanyID
                     && c.CategoryID == CategoryID
@@ -130,39 +134,69 @@ namespace PWEBAssignment.Controllers
                     && c.Available == true 
                     && c.Company.Available == true).ToListAsync());
             }
-            
-            if(CompanyID > 0 || CategoryID > 0 || Address != "Select Option") 
+
+            ViewData["ListOfCategorys"] = new SelectList(_context.Category.ToList(), "Id", "Name");
+            ViewData["ListOfCompanys"] = new SelectList(_context.Company.ToList(), "Id", "Name");
+            ViewData["ListOfAddresses"] = new SelectList(_context.Company.ToList(), "Address", "Address");
+
+            //var listCar = _context.Car;
+            if (CompanyID > 0)
             {
-                var listCar = _context.Car;
-                if (CompanyID > 0)
-                {
-                    if (User.IsInRole("Client") || !User.Identity.IsAuthenticated)
-                        return View(await _context.Car.Include("Company")
-                        .Where(c => c.CompanyID == CompanyID && c.Available == true && c.Company.Available == true).ToListAsync());
+                var company = await _context.Company.FirstOrDefaultAsync(c => c.Id == CompanyID);
+                ViewData["Title"] = "List of Cars with Company: '" + company.Name + "'";
+
+                if (User.IsInRole("Client") || !User.Identity.IsAuthenticated)
                     return View(await _context.Car.Include("Company")
-                        .Where(c => c.CompanyID == CompanyID).ToListAsync());
-                    //listCar = await listCar.Where(c => c.CompanyID == CompanyID).ToListAsync();       //estar a acrescentar na pes
-                }
-                if (CategoryID > 0)
-                {
-                    if(User.IsInRole("Client") || !User.Identity.IsAuthenticated)
-                        return View(await _context.Car.Include("Company")
-                        .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
-                    return View(await _context.Car.Include("Category")
-                        .Where(c => c.CategoryID == CategoryID).ToListAsync());
-                    //listCar.Where(c => c.CategoryID == CompanyID);
-                }
-                if (Address != "Select Option")
-                {
-                    if (User.IsInRole("Client") || !User.Identity.IsAuthenticated)
-                        return View(await _context.Car.Include("Company")
-                        .Where(c => c.Company.Address == Address && c.Available == true && c.Company.Available == true).ToListAsync());
-                    return View(await _context.Car.Include("Company")
-                       .Where(c => c.Company.Address == Address).ToListAsync());
-                }
-                return View(await listCar.ToListAsync());
-            
+                    .Where(c => c.CompanyID == CompanyID && c.Available == true && c.Company.Available == true).ToListAsync());
+                return View(await _context.Car.Include("Company")
+                    .Where(c => c.CompanyID == CompanyID).ToListAsync());
+                //listCar = await listCar.Where(c => c.CompanyID == CompanyID).ToListAsync();       //estar a acrescentar na pes
             }
+            if (CategoryID > 0)
+            {
+                var category = await _context.Category.FirstOrDefaultAsync(c => c.Id == CategoryID);
+                ViewData["Title"] = "List of Cars with Category: '" + category.Name + "'";
+
+                if (User.IsInRole("Client") || !User.Identity.IsAuthenticated)
+                {
+                    return View(await _context.Car.Include("Company")
+                    .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
+                   
+                }
+                return View(await _context.Car.Include("Company")
+                    .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
+            }
+            if (Address != "Select Option" && !Address.IsNullOrEmpty())
+            {
+                ViewData["Title"] = "List of Cars with Location: '" + Address + "'";
+
+                if (User.IsInRole("Client") || !User.Identity.IsAuthenticated)
+                    return View(await _context.Car.Include("Company")
+                    .Where(c => c.Company.Address == Address && c.Available == true && c.Company.Available == true).ToListAsync());
+                return View(await _context.Car.Include("Company")
+                    .Where(c => c.Company.Address == Address).ToListAsync());
+            }
+
+            ViewData["Title"] = "There were no cars that matched these fiters";
+
+            if(User.IsInRole("Client") || !User.Identity.IsAuthenticated)
+            {
+                return View(await _context.Car.Include("Company")
+                   .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
+            }
+
+            if (User.IsInRole("Employee") || User.IsInRole("Manager"))
+            {
+                return View(await _context.Car.Include("Company")
+                   .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
+            }
+
+            if (User.IsInRole("Admin"))
+            {
+                return View(await _context.Car.Include("Company")
+                   .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
+            }
+
             return RedirectToAction("Index");
             
         }
