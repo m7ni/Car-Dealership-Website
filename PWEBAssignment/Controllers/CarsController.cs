@@ -147,6 +147,7 @@ namespace PWEBAssignment.Controllers
 
                 if (User.IsInRole("Client") || !User.Identity.IsAuthenticated)
                     return View(await _context.Car.Include("Company")
+<<<<<<< Updated upstream
                     .Where(c => c.CompanyID == CompanyID && c.Available == true && c.Company.Available == true).ToListAsync());
                 return View(await _context.Car.Include("Company")
                     .Where(c => c.CompanyID == CompanyID).ToListAsync());
@@ -158,6 +159,21 @@ namespace PWEBAssignment.Controllers
                 ViewData["Title"] = "List of Cars with Category: '" + category.Name + "'";
 
                 if (User.IsInRole("Client") || !User.Identity.IsAuthenticated)
+=======
+                        .Where(c => c.CompanyID == CompanyID).ToListAsync());
+                    //listCar = await listCar.Where(c => c.CompanyID == CompanyID).ToListAsync();       //estar a acrescentar na pes
+                }
+                if (CategoryID > 0)
+                {
+                    if(User.IsInRole("Client") || !User.Identity.IsAuthenticated)
+                        return View(await _context.Car.Include("Company")
+                        .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
+                    return View(await _context.Car.Include("Company")
+                        .Where(c => c.CategoryID == CategoryID).ToListAsync());
+                    //listCar.Where(c => c.CategoryID == CompanyID);
+                }
+                if (Address != "Select Option")
+>>>>>>> Stashed changes
                 {
                     return View(await _context.Car.Include("Company")
                     .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());

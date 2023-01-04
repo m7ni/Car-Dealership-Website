@@ -23,10 +23,10 @@
 					<input class="form-check-input" asp-for="VehicleDamage" /> @Html.DisplayNameFor(model => model.VehicleDamage)
 				</label>
 			</div>
-			<div class="col-md-8">
+			<div class="col-md-8" id="files" style="display: none;">
 				<p>Adicionar imagens</p>
 				<div class="form-group">
-					<input type="file" name="files" id="files" multiple
+					<input type="file" name="files" multiple
 					       accept=".png,.jpg,.jpeg,image/png,image/jpeg"
 					       class="form-control" />
 				</div>
@@ -54,4 +54,17 @@
 	@{
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
+	<script>
+		function toggleFileInput() {
+			var checkbox = document.getElementById("VehicleDamage");
+			var fileInput = document.getElementById("files");
+			if (checkbox.checked) {
+				fileInput.style.display = "block";
+			} else {
+				fileInput.style.display = "none";
+			}
+		}
+
+		document.getElementById("VehicleDamage").addEventListener("change", toggleFileInput);
+	</script>
 }

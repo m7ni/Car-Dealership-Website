@@ -4473,6 +4473,7 @@ textarea.form-control-lg {
 .card > .card-header + .list-group,
 .card > .list-group + .card-footer {
   border-top: 0;
+ 
 }
 
 .card-body {

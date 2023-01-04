@@ -116,6 +116,11 @@ namespace PWEBAssignment.Areas.Identity.Pages.Account
 				// To enable password failures to trigger account lockout, set lockoutOnFailure: true
 
 				var userSelf = await _userManager.FindByEmailAsync(Input.Email);
+                if (userSelf == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return Page();
+                }
 				if (!userSelf.available)
 				{
 					ModelState.AddModelError(string.Empty,"You account is deactivated");

@@ -8,7 +8,13 @@
 	@if (User.IsInRole("Employee") || User.IsInRole("Manager") || User.IsInRole("Admin"))
 	{
 		<p>
-		    <a class="btn btn-primary w-100 mt-3" asp-action="Create">Create New</a>
+
+			<a class="btn btn-primary w-100 mt-3" asp-action="Create">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+					<path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+				</svg>
+				 Create New
+			</a>
 		</p>
 	}
 </div>
@@ -76,12 +82,28 @@
     {
         <div class="col">
             <div class="card mb-4 rounded-3 shadow-sm">
-                
-                <div class="card-body">
-
-                    <div class="card-header py-3">
+	            <div class="card-body">
+		            <div class="card-header py-3 ">
+                        @switch (car.Category.Name)
+                        {
+                            case "SPORT":
+                                <object width="50" height="50" type="image/svg+xml" data="~/img/sports-car.svg"> </object>
+	                            break;
+                            case "SUV":
+	                            <object width="50" height="50" type="image/svg+xml" data="~/img/suv-car.svg"> </object>
+                                break;
+	                        case "LIGHT":
+		                        <object width="50" height="50" type="image/svg+xml" data="~/img/light-car.svg"> </object>
+		                        break;
+	                        case "MICRO":
+		                        <object width="50" height="50" type="image/svg+xml" data="~/img/micro-car.svg"> </object>
+		                        break;
+	                        case "LUXURY":
+		                        <object width="50" height="50" type="image/svg+xml" data="~/img/luxury-car.svg"> </object>
+		                        break;
+                        }
                         <h4 class="my-0 fw-normal">@car.Model</h4>
-                    </div>
+		            </div>
                     <h1 class="card-title pricing-card-title">@car.Category.PriceHour€/Day<small class="text-muted fw-light"></small></h1>
                     <p>Category: @car.Category.Name</p>
                     <p>Company´s Name: @car.Company.Name</p>

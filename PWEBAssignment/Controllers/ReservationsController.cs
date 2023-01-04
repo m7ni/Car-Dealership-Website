@@ -68,7 +68,7 @@ namespace PWEBAssignment.Controllers
         {
 	        var reservations = await _context.Reservations.FindAsync(id);
 	        reservations.ConfirmReturn = true;
-	        _context.Update(reservations);
+            _context.Update(reservations);
 	        await _context.SaveChangesAsync(); 
 			return RedirectToAction(nameof(Index));
         }
@@ -99,8 +99,11 @@ namespace PWEBAssignment.Controllers
             ViewData["CarId"] = new SelectList(_context.Car, "Id", "Id");
             ViewData["CompanyId"] = new SelectList(_context.Company, "Id", "Id");
             var reserv = new Reservations();
-            var car = _context.Car.Where(c => c.Id == id).FirstOrDefault();
-            var company = await _context.Company.FirstOrDefaultAsync(c => c.Id == car.CompanyID);
+            var car = await _context.Car.Include("Category").Where(c => c.Id == id).FirstOrDefaultAsync();
+            
+            ViewData["PriceHour"] = car.Category.PriceHour;
+			
+			var company = await _context.Company.FirstOrDefaultAsync(c => c.Id == car.CompanyID);
             var user = await _userManager.GetUserAsync(User);
 			reserv.CarId = car.Id;
             reserv.CompanyId = company.Id;

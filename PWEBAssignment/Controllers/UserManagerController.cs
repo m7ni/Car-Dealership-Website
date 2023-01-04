@@ -86,9 +86,13 @@ namespace PWEBAssignment.Controllers
 	        var userSelf = await _userManager.GetUserAsync(User);
 
 	        if (userAsked == null || userAsked.Id == userSelf.Id)
+	        {
+		        _toastNotification.Information("You cannot delete yourself", 3);
 		        return RedirectToAction(nameof(Index));
 
-	        var teste = await _context.Reservations.Where(r => r.ClientUserId.ToString() == userId).FirstOrDefaultAsync();
+			}
+
+			var teste = await _context.Reservations.Where(r => r.ClientUserId.ToString() == userId).FirstOrDefaultAsync();
 	        if(teste!=null)
 	        {
 		        return RedirectToAction(nameof(Index));
@@ -146,7 +150,7 @@ namespace PWEBAssignment.Controllers
 			        companyUser.Workers.Add(user);
 			        await _context.SaveChangesAsync();
 				}
-		        
+		       
 				return RedirectToAction(nameof(Index));
 	        }
 	        return View(newUser);

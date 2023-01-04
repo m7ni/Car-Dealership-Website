@@ -413,14 +413,14 @@ namespace PWEBAssignment.Controllers
 		
 
 				var reservations = await _context.Reservations.FindAsync(returnvm.ReservationId);
-				reservations.DeliveryDate = DateTime.Now;
+			
 		        var userSelf = await _userManager.GetUserAsync(User);
 		        returns.EmployeUser = userSelf;
 		        returns.Id = 0;
 		        returns.ReservationId = reservations.Id;
 		        returns.Reservation = reservations;
-
-				_context.Add(returns);
+                reservations.ReturnDate = DateTime.Now;
+                _context.Add(returns);
 		        await _context.SaveChangesAsync();
 
 				var car = await _context.Car.FindAsync(reservations.CarId);
