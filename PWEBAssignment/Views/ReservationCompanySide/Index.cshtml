@@ -31,11 +31,11 @@
             <select name="ModelID" asp-items="ViewBag.ListOfModels">
                 <option value="">Select Option</option>
             </select>
-
+            @*
             <label for="fname" class="control-label">Client</label>
             <select name="ClientID" asp-items="ViewBag.ListOfClients">
                 <option value="">Select Option</option>
-            </select>
+            </select>*@
             <input class="btn btn-primary" type="submit" value="Search" />
 
 
@@ -80,6 +80,7 @@
 	        <td>
 		        @Html.DisplayFor(modelItem => item.Car.Model)
 		        [@Html.DisplayFor(modelItem => item.Car.LicencePlate)]
+                    - @Html.DisplayFor(modelItem => item.Car.Category.Name)
 	        </td>
 	        <td>
 		        @item.ReservationDate.ToString("dd/MM/yyyy")

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PWEBAssignment.Data;
 using PWEBAssignment.Models;
 using PWEBAssignment.ViewModels;
@@ -44,32 +45,37 @@ namespace PWEBAssignment.Controllers
             ViewData["ListOfDeliveryDate"] = new SelectList(_context.Reservations.Include(r => r.Company).Where(r => r.CompanyId == userSelf.CompanyID), "DeliveryDate", "DeliveryDate");
             ViewData["ListOfReturnDate"] = new SelectList(_context.Reservations.Include(r => r.Company).Where(r => r.CompanyId == userSelf.CompanyID), "ReturnDate", "ReturnDate");
             ViewData["ListOfModels"] = new SelectList(_context.Car, "Id", "Model");
-            ViewData["ListOfClients"] = new SelectList(_context.Reservations.Include(r => r.Company).Where(r => r.CompanyId == userSelf.CompanyID), "Id", "ClientUser");
+            ViewData["ListOfClients"] = new SelectList(_context.Reservations.Include(r => r.Company).Where(r => r.CompanyId == userSelf.CompanyID), "Id", "ClientUserId");
 
             return View(await applicationDbContext.ToListAsync());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(int CategoryID, DateTime DeliveryDate, DateTime ReturnDate, int ModelID, int ClientID)
+        public async Task<IActionResult> Index(int CategoryID, DateTime DeliveryDate, DateTime ReturnDate, int ModelID/*, int ClientID*/)
         {
             
             var user = await _userManager.GetUserAsync(User);
-            
+            var applicationDbContext = _context.Reservations
+                .Include(r => r.Car)
+                .Include(r => r.Company)
+                .Include(r => r.ClientUser)
+                .Where(r => r.CompanyId == user.CompanyID);
             ViewData["ListOfCategorys"] = new SelectList(_context.Category, "Id", "Name");
             ViewData["ListOfDeliveryDate"] = new SelectList(_context.Reservations.Include(r => r.Company).Where(r => r.CompanyId == user.CompanyID), "DeliveryDate", "DeliveryDate");
             ViewData["ListOfReturnDate"] = new SelectList(_context.Reservations.Include(r => r.Company).Where(r => r.CompanyId == user.CompanyID), "ReturnDate", "ReturnDate");
             ViewData["ListOfModels"] = new SelectList(_context.Car, "Id", "Model");
-            ViewData["ListOfClients"] = new SelectList(_context.Reservations.Include(r => r.Company).Where(r => r.CompanyId == user.CompanyID), "Id", "ClientUser");
+            ViewData["ListOfClients"] = new SelectList(_context.Reservations.Include(r => r.Company).Where(r => r.CompanyId == user.CompanyID), "Id", "ClientUserId");
 
             if (CategoryID > 0 && DeliveryDate != null && ReturnDate != null && ModelID > 0/* && ClientID > 0*/)
             {
                 var category = await _context.Category.FirstOrDefaultAsync(c => c.Id == CategoryID);
                 var car = await _context.Car.FirstOrDefaultAsync(c => c.Id == ModelID);
                 var reservation = await _context.Reservations.FirstOrDefaultAsync(c => c.DeliveryDate == DeliveryDate);
+                //var client = await _context.Reservations.FirstOrDefaultAsync(c => c.ClientUserId == ClientID);
                 
 
-                //ViewData["Title"] = "List of Reservations with Category: '" + category.Name + "', Model: '" + car.Model + "', Client: '" + reservation.ClientUser.firstName + " " + reservation.ClientUser.lastName + "', Delivery Date: '" + reservation.DeliveryDate + "', Return Date: '" + reservation.ReturnDate + "'";
+                ViewData["Title"] = "List of Reservations with Category: '" + category.Name + "', Model: '" + car.Model + /*"', Client: '" + client.ClientUser.firstName + " " + client.ClientUser.lastName +*/ "', Delivery Date: '" + reservation.DeliveryDate + "', Return Date: '" + reservation.ReturnDate + "'";
 
                 return View(await _context.Reservations.Include("Company")
                     .Where(c => c.Car.Model == car.Model
@@ -85,39 +91,66 @@ namespace PWEBAssignment.Controllers
                 var category = await _context.Category.FirstOrDefaultAsync(c => c.Id == CategoryID);
                 ViewData["Title"] = "List of Reservations with Category: '" + category.Name + "'";
 
+                if ((await _context.Reservations.Include("Company")
+                    .Where(c => c.Car.Category == category
+                    && c.CompanyId == user.CompanyID).ToListAsync()).IsNullOrEmpty())
+                {
+                    ViewData["Title"] = "There where no reservations that matched those filters";
+                    if (User.IsInRole("Admin"))
+                    {
+                        return View(await _context.Reservations.Include("Company").ToListAsync());
+                    }
+
+                    return View(await _context.Reservations.Include("Company")
+                    .Where(c => c.CompanyId == user.CompanyID).ToListAsync());
+                }
+
                 return View(await _context.Reservations.Include("Company")
                     .Where(c => c.Car.Category == category
                     && c.CompanyId == user.CompanyID).ToListAsync());
 
             }
-            
-            
 
             if (ModelID > 0)
             {
                 var car = await _context.Car.FirstOrDefaultAsync(c => c.Id == ModelID);
                 ViewData["Title"] = "List of Reservations with Model: '" + car.Model + "'";
 
+                if((await _context.Reservations.Include("Company")
+                    .Where(c => c.Car.Model == car.Model
+                    && c.CompanyId == user.CompanyID).ToListAsync()).IsNullOrEmpty())
+                {
+
+                    ViewData["Title"] = "There where no reservations that matched those filters";
+                    if (User.IsInRole("Admin"))
+                    {
+                        return View(await _context.Reservations.Include("Company").ToListAsync());
+                    }
+
+                    return View(await _context.Reservations.Include("Company")
+                    .Where(c => c.CompanyId == user.CompanyID).ToListAsync());
+                }
+
                 return View(await _context.Reservations.Include("Company")
                     .Where(c => c.Car.Model == car.Model
                     && c.CompanyId == user.CompanyID).ToListAsync());
 
             }
-            
+            /*
             if (ClientID > 0)
             {
                 var reservation = await _context.Reservations.FirstOrDefaultAsync(c => c.ClientUserId == ClientID);
-                ViewData["Title"] = "List of Reservations with Client: '" + reservation.ClientUser.firstName + " " + reservation.ClientUser.lastName + "'";
+                //ViewData["Title"] = "List of Reservations with Client: '" + reservation.ClientUser.firstName + " " + reservation.ClientUser.lastName + "'";
 
-                /*return View(await _context.Reservations.Include("Company")
+                return View(await _context.Reservations.Include("Company")
                     .Where(c => c.Car.Model == car.Model
                     && c.Car.Category == car.Category
                     && c.ClientUserId == ClientID
-                    && c.CompanyId == user.CompanyID).ToListAsync());*/
+                    && c.CompanyId == user.CompanyID).ToListAsync());
 
-            }
-
-            if (DeliveryDate != null)
+            }*/
+            var dateTest = new DateTime(1,01,0001,00,00,00);
+            if (DeliveryDate != null && DeliveryDate != dateTest)
             {
                 var reservation = await _context.Reservations.FirstOrDefaultAsync(c => c.DeliveryDate == DeliveryDate);
                 ViewData["Title"] = "List of Reservations with Delivery Date: '" + reservation.DeliveryDate + "'";
@@ -126,8 +159,8 @@ namespace PWEBAssignment.Controllers
                     .Where(c => c.DeliveryDate == DeliveryDate
                     && c.CompanyId == user.CompanyID).ToListAsync());
             }
-
-            if (ReturnDate != null)     //descobrir como ele chegar até este quando não se escolhe para pesquisar o deliveryDate
+            
+            if (ReturnDate != null && DeliveryDate != dateTest)     //descobrir como ele chegar até este quando não se escolhe para pesquisar o deliveryDate
             {
                 var reservation = await _context.Reservations.FirstOrDefaultAsync(c => c.ReturnDate == ReturnDate);
                 ViewData["Title"] = "List of Reservations with Return Date: '" + reservation.ReturnDate + "'";
@@ -135,11 +168,17 @@ namespace PWEBAssignment.Controllers
                 return View(await _context.Reservations.Include("Company")
                     .Where(c => c.ReturnDate == ReturnDate
                     && c.CompanyId == user.CompanyID).ToListAsync());
-
+            
             }
 
             ViewData["Title"] = "There where no reservations that matched those filters";
-            return RedirectToAction("Index");
+            if(User.IsInRole("Admin"))
+            {
+                return View(await _context.Reservations.Include("Company").ToListAsync());
+            }
+
+            return View(await _context.Reservations.Include("Company")
+                    .Where(c => c.CompanyId == user.CompanyID).ToListAsync());
         }
 
 

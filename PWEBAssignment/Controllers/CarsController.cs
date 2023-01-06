@@ -66,12 +66,12 @@ namespace PWEBAssignment.Controllers
                 if (order == Orders.Available)
                 {
                     ViewData["Title"] = "Available Cars";
-                    return View(await _context.Car.Include("Category").Include("Company").Where(c => c.Available == true).ToListAsync());
+                    return View(await _context.Car.Include("Category").Include("Company").Where(c => c.Available == true && c.Company == userSelf.Company).ToListAsync());
                 }
                 if (order == Orders.NotAvailable)
                 {
                     ViewData["Title"] = "Not Available Cars";
-                    return View(await _context.Car.Include("Category").Include("Company").Where(c => c.Available == false).ToListAsync());
+                    return View(await _context.Car.Include("Category").Include("Company").Where(c => c.Available == false && c.Company == userSelf.Company).ToListAsync());
                 }
 
                 return View(listCar);
@@ -113,6 +113,11 @@ namespace PWEBAssignment.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(int CompanyID, int CategoryID, string Address)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (User.IsInRole("Employee") || User.IsInRole("Manager"))
+            {
+                user = await _userManager.GetUserAsync(User);
+            }
             
 
             if (CompanyID > 0 && CategoryID > 0 && Address != "Select Option")
@@ -139,18 +144,37 @@ namespace PWEBAssignment.Controllers
             ViewData["ListOfCompanys"] = new SelectList(_context.Company.ToList(), "Id", "Name");
             ViewData["ListOfAddresses"] = new SelectList(_context.Company.ToList(), "Address", "Address");
 
-            //var listCar = _context.Car;
             if (CompanyID > 0)
             {
                 var company = await _context.Company.FirstOrDefaultAsync(c => c.Id == CompanyID);
                 ViewData["Title"] = "List of Cars with Company: '" + company.Name + "'";
 
                 if (User.IsInRole("Client") || !User.Identity.IsAuthenticated)
+                {
+                    if((await _context.Car.Include("Company")
+                        .Where(c => c.CompanyID == CompanyID && c.Available == true && c.Company.Available == true).ToListAsync()).IsNullOrEmpty())
+                    {
+                        ViewData["Title"] = "There were no cars that matched these filters";
+
+                        return View(await _context.Car.Include("Company")
+                            .Where(c => c.Available == true && c.Company.Available == true).ToListAsync());
+                    }
+
                     return View(await _context.Car.Include("Company")
                     .Where(c => c.CompanyID == CompanyID && c.Available == true && c.Company.Available == true).ToListAsync());
-                return View(await _context.Car.Include("Company")
-                    .Where(c => c.CompanyID == CompanyID).ToListAsync());
-                //listCar = await listCar.Where(c => c.CompanyID == CompanyID).ToListAsync();       //estar a acrescentar na pes
+                }
+                if(User.IsInRole("Admin"))
+                {
+                    if ((await _context.Car.Include("Company")
+                        .Where(c => c.CompanyID == CompanyID).ToListAsync()).IsNullOrEmpty())
+                    {
+                        ViewData["Title"] = "There were no cars that matched these filters";
+                        return View(await _context.Car.Include("Company").ToListAsync());
+                    }
+
+                    return View(await _context.Car.Include("Company")
+                        .Where(c => c.CompanyID == CompanyID).ToListAsync());
+                }
             }
             if (CategoryID > 0)
             {
@@ -159,42 +183,99 @@ namespace PWEBAssignment.Controllers
 
                 if (User.IsInRole("Client") || !User.Identity.IsAuthenticated)
                 {
+                    if((await _context.Car.Include("Company")
+                    .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync()).IsNullOrEmpty())
+                    {
+                        ViewData["Title"] = "There were no cars that matched these filters";
+
+                        return View(await _context.Car.Include("Company")
+                            .Where(c => c.Available == true && c.Company.Available == true).ToListAsync());
+
+                    }
+
                     return View(await _context.Car.Include("Company")
                     .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
 
                 }
+                if(User.IsInRole("Admin"))
+                {
+                    if((await _context.Car.Include("Company").ToListAsync()).IsNullOrEmpty())
+                    {
+                        ViewData["Title"] = "There were no cars that matched these filters";
+
+                        return View(await _context.Car.ToListAsync());
+                    }
+                    return View(await _context.Car.Include("Company").ToListAsync());
+                }
+                if((await _context.Car.Include("Company")
+                    .Where(c => c.Company == user.Company && c.CategoryID == CategoryID).ToListAsync()).IsNullOrEmpty())
+                {
+                    ViewData["Title"] = "There were no cars that matched these filters";
+
+                    if(User.IsInRole("Admin"))
+                    {
+                        return View(await _context.Car.Include("Company").ToListAsync());
+                    }
+                    if(User.IsInRole("Manager") || User.IsInRole("Employee"))
+                    {
+                        return View(await _context.Car.Include("Company")
+                            .Where(c => c.Company == user.Company).ToListAsync());
+                    }
+                    return View(await _context.Car.Include("Company")
+                        .Where(c => c.Available == true && c.Company.Available == true).ToListAsync());
+                }
                 return View(await _context.Car.Include("Company")
-                    .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
+                    .Where(c => c.Company == user.Company && c.CategoryID == CategoryID).ToListAsync());
             }
             if (Address != "Select Option" && !Address.IsNullOrEmpty())
             {
                 ViewData["Title"] = "List of Cars with Location: '" + Address + "'";
 
                 if (User.IsInRole("Client") || !User.Identity.IsAuthenticated)
+                {
+                    if((await _context.Car.Include("Company")
+                        .Where(c => c.Company.Address == Address && c.Available == true && c.Company.Available == true).ToListAsync()).IsNullOrEmpty())
+                    {
+                        ViewData["Title"] = "There were no cars that matched these filters";
+                        return View(await _context.Car.Include("Company")
+                        .Where(c => c.Available == true && c.Company.Available == true).ToListAsync());
+                    }
                     return View(await _context.Car.Include("Company")
-                    .Where(c => c.Company.Address == Address && c.Available == true && c.Company.Available == true).ToListAsync());
-                return View(await _context.Car.Include("Company")
-                    .Where(c => c.Company.Address == Address).ToListAsync());
+                        .Where(c => c.Company.Address == Address && c.Available == true && c.Company.Available == true).ToListAsync());
+                }
+                    
+                if(User.IsInRole("Admin"))
+                {
+                    if((await _context.Car.Include("Company")
+                        .Where(c => c.Company.Address == Address).ToListAsync()).IsNullOrEmpty())
+                    {
+                        ViewData["Title"] = "There were no cars that matched these filters";
+                        return View(await _context.Car.Include("Company").ToListAsync());
+                    }
+
+                    return View(await _context.Car.Include("Company")
+                        .Where(c => c.Company.Address == Address).ToListAsync());
+                }
+                
             }
 
-            ViewData["Title"] = "There were no cars that matched these fiters";
+            ViewData["Title"] = "There were no cars that matched these filters";
 
             if (User.IsInRole("Client") || !User.Identity.IsAuthenticated)
             {
                 return View(await _context.Car.Include("Company")
-                   .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
+                   .Where(c => c.Available == true && c.Company.Available == true).ToListAsync());
             }
 
             if (User.IsInRole("Employee") || User.IsInRole("Manager"))
             {
                 return View(await _context.Car.Include("Company")
-                   .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
+                   .Where(c => c.Available == true && c.Company.Available == true).ToListAsync());
             }
 
             if (User.IsInRole("Admin"))
             {
-                return View(await _context.Car.Include("Company")
-                   .Where(c => c.CategoryID == CategoryID && c.Available == true && c.Company.Available == true).ToListAsync());
+                return View(await _context.Car.ToListAsync());
             }
 
             return RedirectToAction("Index");
