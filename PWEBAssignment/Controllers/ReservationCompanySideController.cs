@@ -134,6 +134,7 @@ namespace PWEBAssignment.Controllers
                 return View(await _context.Reservations.Include("Company")
                     .Where(c => c.Car.Model == car.Model
                     && c.CompanyId == user.CompanyID).ToListAsync());
+                
 
             }
             /*
