@@ -1,5 +1,4 @@
-# Car Dealership Website - Web Programming Assignment Readme
-
+# Car Dealership Website
 ## Overview
 
 Welcome to the Car Dealership Website repository, the result of the Web Programming course assignment. The objective of this project was to implement a fully functional car dealership website using the Model-View-Controller (MVC) architecture, adopting a data structure-first approach with the .NET framework, and incorporating user authentication with Identity. The assignment received a score of 17 out of 20.
